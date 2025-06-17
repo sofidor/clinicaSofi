@@ -1,0 +1,35 @@
+<div class="hero-container">
+  <header class="navbar">
+    <div class="logo">
+      <img src="assets/images/icono.ico" alt="Clínica" />
+      <div class="titulo-logo">
+        <h2>Clínica OnLine</h2>
+        <span>Especialistas en Salud</span>
+      </div>
+    </div>
+    <nav class="acciones-navbar">
+      <button (click)="goToLogin('login')">Iniciar Sesión</button>
+      <button class="registrar" (click)="goToRegistro('registro')">Registrarse</button>
+    </nav>
+  </header>
+
+  <main class="contenido">
+    <h1>¡BIENVENIDOS!</h1>
+    <h3>Atención centrada en la <strong>PERSONA</strong></h3>
+    <p>
+      Somos un equipo de más de 50 profesionales médicos, técnicos y administrativos, comprometidos en brindar
+      cada día una excelente atención, eficiencia y con un trato cálido y cordial.
+    </p>
+
+    <div class="botones-main">
+      <button class="btn-principal" (click)="goToRegistro('registro')">🧑‍⚕️ REGISTRARSE</button>
+    </div>
+
+    <div class="stats">
+      <div><strong>6</strong><br />Consultorios</div>
+      <div><strong>2</strong><br />Laboratorios</div>
+      <div><strong>15+</strong><br />Especialidades</div>
+      <div><strong>24/7</strong><br />Emergencias</div>
+    </div>
+  </main>
+</div>

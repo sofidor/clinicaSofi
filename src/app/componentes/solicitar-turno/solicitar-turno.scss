@@ -1,0 +1,176 @@
+/* Navbar preservado tal como está */
+/* Navbar */
+.navbar-clinica {
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+
+    .titulo-logo {
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #d1d5db;
+      }
+    }
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+
+    li {
+      button {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .logout-btn {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.5);
+
+        &:hover {
+          background-color: rgba(248, 113, 113, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* Estilos para Solicitar Turno */
+:host {
+  display: block;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #1e3a8a;
+}
+
+form {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  margin-top: 1.5rem;
+  color: #1e40af;
+}
+
+button {
+  margin: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #e0e7ff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+button:hover {
+  background-color: #c7d2fe;
+}
+
+button.selected {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #374151;
+}
+
+input[type="date"],
+input[type="time"] {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  font-size: 0.95rem;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+button[type="submit"]:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+} 
+
+.especialista-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  h4 {
+    margin: 0;
+    color: #1e3a8a;
+  }
+}
+
+.foto-especialista {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+}

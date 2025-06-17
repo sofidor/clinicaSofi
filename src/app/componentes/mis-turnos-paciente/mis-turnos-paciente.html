@@ -1,0 +1,89 @@
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="goTo('solicitar-turno')">Solicitar Turno</button></li>
+    <li><button (click)="toggleVista(false)">Mis Turnos</button></li>
+    <li><button (click)="toggleVista(true)">Mi Perfil</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<!-- PERFIL -->
+<div class="perfil-container" *ngIf="mostrarPerfil && userData">
+  <h2>Mi Perfil</h2>
+  <img [src]="userData.fotoPerfil" alt="Foto de perfil" class="foto-perfil" />
+  <div class="datos-usuario">
+    <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
+    <p><strong>Apellido:</strong> {{ userData.apellido }}</p>
+    <p><strong>Edad:</strong> {{ userData.edad }}</p>
+    <p><strong>DNI:</strong> {{ userData.dni }}</p>
+    <p><strong>Obra Social:</strong> {{ userData.obraSocial }}</p>
+    <p><strong>Mail:</strong> {{ userData.mail }}</p>
+  </div>
+</div>
+
+<!-- TURNOS -->
+<div class="hero-background" *ngIf="!mostrarPerfil">
+  <div class="turnos-wrapper">
+    <h2>Mis Turnos</h2>
+
+   
+    <!-- Filtros -->
+    <div class="filtro-unico">
+    <div class="filtros-especialidad">
+        <h3>Filtrar por Especialidad:</h3>
+        <button *ngFor="let esp of especialidades"
+                [class.selected]="filtroEspecialidad === esp"
+                (click)="filtroEspecialidad = esp">
+        {{ esp }}
+        </button>
+        <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null">Quitar filtro</button>
+    </div>
+
+    <div class="filtros-doctor">
+        <h3>Filtrar por Especialista:</h3>
+        <button *ngFor="let doc of especialistas"
+                [class.selected]="filtroEspecialista === doc"
+                (click)="filtroEspecialista = doc">
+        {{ doc }}
+        </button>
+        <button *ngIf="filtroEspecialista" (click)="filtroEspecialista = null">Quitar filtro</button>
+    </div>
+    </div>
+
+    <!-- Lista -->
+    <div *ngFor="let turno of turnosFiltrados()" [ngClass]="'turno-card ' + turno.estado">
+      <p><strong>Especialista:</strong> {{ turno.especialista }}</p>
+      <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+      <p><strong>Fecha:</strong> {{ turno.fecha | date:'shortDate' }} {{ turno.hora }}</p>
+      <div class="estado" [ngClass]="turno.estado">Estado: {{ turno.estado | uppercase }}</div>
+
+      <!-- Acciones -->
+      <div class="acciones">
+        <ng-container *ngIf="puedeCancelar(turno)">
+          <button (click)="mostrarCancelar(turno.id)">Cancelar turno</button>
+          <div *ngIf="comentarioCancelacion[turno.id] !== undefined">
+            <textarea [(ngModel)]="comentarioCancelacion[turno.id]" placeholder="Motivo de cancelación"></textarea>
+            <button (click)="cancelarTurno(turno.id)">Confirmar</button>
+          </div>
+        </ng-container>
+
+        <button *ngIf="puedeVerResena(turno)" (click)="verResena(turno)">Ver Diagnostico</button>
+        
+        <ng-container *ngIf="puedeCalificar(turno)">
+          <button (click)="mostrarComentario(turno.id)">Calificar atención</button>
+          <div *ngIf="comentarioAtencion[turno.id] !== undefined">
+            <textarea [(ngModel)]="comentarioAtencion[turno.id]" placeholder="Comentario sobre la atención"></textarea>
+            <button (click)="calificarAtencion(turno.id)">Enviar</button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

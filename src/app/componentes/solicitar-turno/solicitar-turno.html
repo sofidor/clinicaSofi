@@ -1,0 +1,62 @@
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="goTo('mis-turnos-paciente')">Mi perfil</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<h2>Solicitar Turno</h2>
+
+<form *ngIf="formTurno" [formGroup]="formTurno" (ngSubmit)="solicitarTurno()">
+  <!-- todos los campos del formulario -->
+
+
+  <div>
+    <h3>Seleccionar Especialista:</h3>
+    <button type="button"
+            *ngFor="let e of especialistas"
+            [class.selected]="formTurno.value.especialistaId === e.id"
+            (click)="formTurno.patchValue({ especialistaId: e.id }); onEspecialistaChange()">
+      {{ e.nombre }} {{ e.apellido }}
+    </button>
+  </div>
+
+  <!-- Mostrar información del especialista -->
+  <div *ngIf="especialistaSeleccionado" class="especialista-info">
+    <img [src]="especialistaSeleccionado.fotoPerfil" alt="Foto especialista" class="foto-especialista">
+    <h4>{{ especialistaSeleccionado.nombre }} {{ especialistaSeleccionado.apellido }}</h4>
+  </div>
+
+  <!-- Especialidades disponibles -->
+  <div *ngIf="especialidades.length">
+    <h3>Especialidades:</h3>
+    <button type="button"
+            *ngFor="let esp of especialidades"
+            [class.selected]="formTurno.value.especialidad === esp"
+            (click)="formTurno.patchValue({ especialidad: esp }); horariosDelDia = []; formTurno.patchValue({ fecha: '', hora: '' })">
+      {{ esp }}
+    </button>
+  </div>
+
+  <label>Fecha:</label>
+  <input type="date" formControlName="fecha" (change)="onFechaChange()">
+
+  <label>Hora:</label>
+  <div class="horarios-disponibles">
+    <button type="button"
+            *ngFor="let hora of horariosDelDia"
+            [class.selected]="formTurno.value.hora === hora"
+            (click)="formTurno.patchValue({ hora })">
+      {{ hora }}
+    </button>
+  </div>
+
+  <button type="submit" [disabled]="formTurno.invalid">Confirmar Turno</button>
+</form>
