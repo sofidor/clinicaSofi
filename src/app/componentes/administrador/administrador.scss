@@ -89,100 +89,219 @@ h2 {
 }
 
 /* Tabla de usuarios */
-.user-table-container {
-  margin-top: 30px;
-  overflow-x: auto;
-  display: flex;
-  justify-content: center;
-}
-
+/* Tabla general */
 .user-table {
   width: 100%;
-  max-width: 1200px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: white;
-  border-radius: 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   overflow: hidden;
 }
 
-.user-table th, .user-table td {
-  padding: 12px 14px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
+/* Encabezados */
 .user-table th {
-  background-color: #007bff;
-  color: white;
+  background: linear-gradient(to right, #1e3a8a, #3b82f6);
+  color: #fff;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 14px;
+  text-align: center;
 }
 
-.user-table tr:nth-child(even) td {
-  background-color: #f5f5f5;
-}
-
+/* Celdas */
 .user-table td {
+  padding: 16px 12px;
+  text-align: center;
+  vertical-align: middle;
   font-size: 14px;
+  color: #333;
 }
 
-/* Imagen de usuario */
+/* Zebra striping */
+.user-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Imagen redonda */
 .user-img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1e3a8a;
 }
 
-/* Botones */
-button {
+/* Botones de acción */
+.user-table button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+}
+
+.user-table button:hover {
+  filter: brightness(1.1);
+}
+
+button[ng-reflect-ng-if="true"] {
+  background-color: #10b981; /* Verde */
+  color: white;
+}
+
+button[ng-reflect-ng-if="false"] {
+  background-color: #ef4444; /* Rojo */
+  color: white;
+}
+
+/* Visualización especialidades */
+.especialidad-pill {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  margin: 2px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+/* Botones especiales para acciones */
+.btn-habilitar {
+  background-color: #10b981; // verde esmeralda
+  color: white;
+  border: none;
   padding: 6px 12px;
   font-size: 13px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
-button:hover {
-  background-color: #0056b3;
+.btn-habilitar:hover {
+  background-color: #059669;
 }
+
+.btn-deshabilitar {
+  background-color: #ef4444; // rojo fuerte
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.btn-deshabilitar:hover {
+  background-color: #dc2626;
+}
+
+
 
 /* Formulario para crear admin */
 .create-admin-container {
   margin-top: 40px;
-  padding: 25px;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .create-admin-container h3 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
 }
 
 .create-admin-container form {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
 .create-admin-container label {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #444;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
 }
 
-.create-admin-container input {
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.create-admin-container input[type="text"],
+.create-admin-container input[type="email"],
+.create-admin-container input[type="password"],
+.create-admin-container input[type="number"],
+.create-admin-container input[type="file"] {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #f9fafb;
+  transition: border-color 0.2s;
+}
+
+.create-admin-container input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.create-admin-container button[type="submit"] {
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-admin-container button[type="submit"]:hover {
+  background-color: #1d4ed8;
+}
+
+.create-admin-container button[type="button"] {
+  background-color: transparent;
+  color: #2563eb;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.create-admin-container button[type="button"]:hover {
+  text-decoration: underline;
+}
+
+.exportar-excel-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btn-exportar {
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-exportar:hover {
+  background-color: #1976d2;
 }
 
 /* Error */

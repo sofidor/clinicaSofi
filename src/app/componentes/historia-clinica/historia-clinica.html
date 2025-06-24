@@ -1,0 +1,35 @@
+<div *ngIf="mostrarFormulario; else noDisponible">
+  <h2>Cargar Historia Clínica</h2>
+
+  <form [formGroup]="formHistoria" (ngSubmit)="guardarHistoria()">
+    <label>Altura (cm):</label>
+    <input formControlName="altura" type="number" />
+
+    <label>Peso (kg):</label>
+    <input formControlName="peso" type="number" />
+
+    <label>Temperatura (°C):</label>
+    <input formControlName="temperatura" type="number" />
+
+    <label>Presión:</label>
+    <input formControlName="presion" type="text" />
+
+    <hr />
+    <h3>Datos Extra (máximo 3)</h3>
+    <div formArrayName="datosExtra">
+      <div *ngFor="let dato of datosExtra.controls; let i = index" [formGroupName]="i">
+        <input placeholder="Clave" formControlName="clave" />
+        <input placeholder="Valor" formControlName="valor" />
+        <button type="button" (click)="eliminarDatoExtra(i)">Eliminar</button>
+      </div>
+    </div>
+    <button type="button" (click)="agregarDatoExtra()" [disabled]="datosExtra.length >= 3">+ Agregar Dato</button>
+
+    <hr />
+    <button type="submit">Guardar Historia Clínica</button>
+  </form>
+</div>
+
+<ng-template #noDisponible>
+  <p>❌ Este turno aún no ha sido realizado. No se puede cargar la historia clínica.</p>
+</ng-template>

@@ -5,6 +5,7 @@
 // import { CommonModule } from '@angular/common';
 // import { ReactiveFormsModule } from '@angular/forms';
 
+
 // declare global {
 //   interface Window {
 //     captchaCallback: (token: string) => void;
@@ -80,6 +81,7 @@
 //       });
 //     }
 //   }
+  
 
 //   get nombre() { return this.getForm().get('nombre'); }
 //   get apellido() { return this.getForm().get('apellido'); }
@@ -131,6 +133,7 @@
 //       this.especialidades.push(nuevaEspecialidad);
 //     }
 //   }
+  
 
 //   async onSubmit() {
 //     const form = this.getForm();
@@ -186,6 +189,8 @@
 
 //   }
 // }
+
+
 import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Supabase } from '../../servicios/supabase';
@@ -323,57 +328,136 @@ export class Registro implements OnInit, AfterViewChecked {
   }
   
 
-  async onSubmit() {
-    const form = this.getForm();
-    if (form.invalid) {
-      Swal.fire('Error', 'Formulario incompleto o inválido', 'error');
+//   async onSubmit() {
+//   const form = this.getForm();
+//   if (form.invalid) {
+//     Swal.fire('Error', 'Formulario incompleto o inválido', 'error');
+//     return;
+//   }
+
+//   if (!this.captchaValido) {
+//     Swal.fire('Error', 'Por favor, resolvé el captcha para continuar.', 'error');
+//     return;
+//   }
+
+//   const formData = { ...form.value, rol: this.selectedRole };
+//   const password = formData.password;
+//   delete formData.password;
+
+//   if (this.selectedRole === 'Especialista') {
+//     formData.especialidades = this.formEspecialista.value.especialidades;
+//   }
+
+//   if (this.archivoSeleccionado1) {
+//     const filePath1 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-1-${Date.now()}`;
+//     const foto1 = await this.supabaseService.uploadImage(this.archivoSeleccionado1, filePath1);
+//     if (foto1) formData.fotoPerfil = foto1;
+//   }
+
+//   if (this.selectedRole === 'Paciente' && this.archivoSeleccionado2) {
+//     const filePath2 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-2-${Date.now()}`;
+//     const foto2 = await this.supabaseService.uploadImage(this.archivoSeleccionado2, filePath2);
+//     if (foto2) formData.fotoPerfil2 = foto2;
+//   }
+
+//   try {
+//     const user = await this.supabaseService.signUp(formData.mail, password);
+//     if (!user) throw new Error('Error al registrar usuario');
+
+//     formData.id = user.id; // ← Usamos el auth.uid()
+//     formData.estado = 'activo';
+
+//     await this.supabaseService.saveUser(formData);
+
+//     // Reset
+//     this.formPaciente.reset();
+//     this.formEspecialista.reset();
+//     this.selectedRole = null;
+//     this.isRoleSelected = false;
+//     this.renderizado = false;
+
+//     Swal.fire('Éxito', 'Usuario registrado correctamente', 'success');
+//   } catch (error) {
+//     Swal.fire('Error', 'Hubo un problema al registrar el usuario', 'error');
+//   }
+// }
+
+async onSubmit() {
+  const form = this.getForm();
+  if (form.invalid) {
+    Swal.fire('Error', 'Formulario incompleto o inválido', 'error');
+    return;
+  }
+
+  if (!this.captchaValido) {
+    Swal.fire('Error', 'Por favor, resolvé el captcha para continuar.', 'error');
+    return;
+  }
+
+  const formData = { ...form.value, rol: this.selectedRole };
+  const password = formData.password;
+  delete formData.password;
+
+  if (this.selectedRole === 'Especialista') {
+    formData.especialidades = this.formEspecialista.value.especialidades;
+  }
+
+  if (this.archivoSeleccionado1) {
+    const filePath1 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-1-${Date.now()}`;
+    const foto1 = await this.supabaseService.uploadImage(this.archivoSeleccionado1, filePath1);
+    if (foto1) formData.fotoPerfil = foto1;
+  }
+
+  if (this.selectedRole === 'Paciente' && this.archivoSeleccionado2) {
+    const filePath2 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-2-${Date.now()}`;
+    const foto2 = await this.supabaseService.uploadImage(this.archivoSeleccionado2, filePath2);
+    if (foto2) formData.fotoPerfil2 = foto2;
+  }
+
+  try {
+    // ✅ Validar si el mail ya está registrado en la tabla usuarios
+    const { data: usuariosExistentes, error: errorMail } = await this.supabaseService.supabase
+      .from('usuarios')
+      .select('id')
+      .eq('mail', formData.mail);
+
+    if (errorMail) {
+      Swal.fire('Error', 'No se pudo verificar el correo. Intenta nuevamente.', 'error');
       return;
     }
 
-    if (!this.captchaValido) {
-      Swal.fire('Error', 'Por favor, resolvé el captcha para continuar.', 'error');
+    if (usuariosExistentes && usuariosExistentes.length > 0) {
+      Swal.fire('Correo ya registrado', 'El correo electrónico ingresado ya está en uso.', 'warning');
       return;
     }
 
-    const formData = { ...form.value, rol: this.selectedRole };
-    const password = formData.password;
-    delete formData.password;
-
-    if (this.selectedRole === 'Especialista') {
-      formData.especialidades = this.formEspecialista.value.especialidades;
+    // ✅ Intentar registrar en Supabase Auth
+    const user = await this.supabaseService.signUp(formData.mail, password);
+    if (!user) {
+      Swal.fire('Error', 'El correo ya está en uso en el sistema de autenticación.', 'error');
+      return;
     }
 
-    if (this.archivoSeleccionado1) {
-      const filePath1 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-1-${Date.now()}`;
-      const foto1 = await this.supabaseService.uploadImage(this.archivoSeleccionado1, filePath1);
-      if (foto1) formData.fotoPerfil = foto1;
-    }
+    // ✅ Insertar en tabla usuarios
+    formData.id = user.id;
+    formData.estado = 'activo';
+    await this.supabaseService.saveUser(formData);
 
-    if (this.selectedRole === 'Paciente' && this.archivoSeleccionado2) {
-      const filePath2 = `${this.selectedRole}-${formData.nombre}-${formData.apellido}-2-${Date.now()}`;
-      const foto2 = await this.supabaseService.uploadImage(this.archivoSeleccionado2, filePath2);
-      if (foto2) formData.fotoPerfil2 = foto2;
-    }
+    this.formPaciente.reset();
+    this.formEspecialista.reset();
+    this.selectedRole = null;
+    this.isRoleSelected = false;
+    this.renderizado = false;
 
-    try {
-      const user = await this.supabaseService.signUp(formData.mail, password);
-      if (!user) throw new Error('Error al registrar usuario');
-
-      formData.id = user.id;            //usar el auth.uid()
-      formData.estado = 'activo';     
-
-      await this.supabaseService.saveUser(formData);
-
-      this.formPaciente.reset();
-      this.formEspecialista.reset();
-      this.selectedRole = null;
-      this.isRoleSelected = false;
-      this.renderizado = false;
-
-      Swal.fire('Éxito', 'Usuario registrado correctamente', 'success');
-    } catch (error) {
+    Swal.fire('Éxito', 'Usuario registrado correctamente', 'success');
+  } catch (error: any) {
+    if (error?.message?.includes('email')) {
+      Swal.fire('Error', 'Este correo ya fue registrado. Probá con otro.', 'error');
+    } else {
       Swal.fire('Error', 'Hubo un problema al registrar el usuario', 'error');
     }
-
   }
+}
+
+
 }

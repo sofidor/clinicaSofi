@@ -9,7 +9,7 @@
     </div>
   </div>
 <ul class="navbar-links">
-      <li><button (click)="goTo('solicitar-turno')">Solicitar Turno</button></li>
+      <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
       <li><button (click)="goTo('registro')">Registrar usuario</button></li>
        <li><button (click)="goTo('turnos')">Turnos</button></li>
       <li><button (click)="toggleCreateAdminForm()">Crear Administrador</button></li>
@@ -25,8 +25,15 @@
   </div>
 
   <!-- Tabla de usuarios -->
-  <div class="user-table-container" *ngIf="modo === 'tabla' && users.length">
-    <table class="user-table">
+<div class="user-table-container" *ngIf="modo === 'tabla' && users.length">
+  
+  <div class="exportar-excel-container">
+    <button class="btn-exportar" (click)="exportarUsuariosAExcel()">
+      📥 Exportar usuarios a Excel
+    </button>
+  </div>
+
+  <table class="user-table">
       <thead>
         <tr>
           <th>Foto</th>
@@ -56,23 +63,34 @@
           <td>{{ user.obraSocial }}</td>
           <td>
           <ng-container *ngIf="isArray(user.especialidades); else textoPlano">
-              {{ user.especialidades.join(', ') }}
-            </ng-container>
-            <ng-template #textoPlano>
-              {{ user.especialidades }}
-            </ng-template>
+            <span class="especialidad-pill" *ngFor="let esp of user.especialidades">
+              {{ esp }}
+            </span>
+          </ng-container>
+          <ng-template #textoPlano>
+            {{ user.especialidades }}
+          </ng-template>
           </td>
           <td>{{ user.estado }}</td>
-<td>
+         <td>
   <ng-container *ngIf="user.rol?.toLowerCase() === 'especialista'">
-    <button *ngIf="user.estado === 'inhabilitado'" (click)="toggleUserStatus(user.id, true)">
-      Habilitar
+    <button
+      *ngIf="user.estado === 'inhabilitado'"
+      (click)="toggleUserStatus(user.id, true)"
+      class="btn-habilitar"
+    >
+      ✅ Habilitar
     </button>
-    <button *ngIf="user.estado === 'activo'" (click)="toggleUserStatus(user.id, false)">
-      Inhabilitar
+    <button
+      *ngIf="user.estado === 'activo'"
+      (click)="toggleUserStatus(user.id, false)"
+      class="btn-deshabilitar"
+    >
+      ❌ Inhabilitar
     </button>
   </ng-container>
 </td>
+
 
          
         </tr>

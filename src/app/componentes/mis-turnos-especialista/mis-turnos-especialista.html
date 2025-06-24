@@ -1,78 +1,4 @@
-<!-- <nav class="navbar-clinica">
-  <div class="logo">
-    <img src="assets/images/icono.ico" alt="Clínica" />
-    <div class="titulo-logo">
-      <h2>Clínica OnLine</h2>
-      <span>Especialistas en Salud</span>
-    </div>
-  </div>
-  <ul class="navbar-links">
-    <li><button >Mis Turnos</button></li>
-    <li><button >Mi Perfil</button></li>
-    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
-  </ul>
-</nav>
-
-
-<div class="perfil-container" *ngIf="userData">
-  <h2>Mi Perfil</h2>
-  <img [src]="userData.fotoPerfil" alt="Foto de perfil" class="foto-perfil" />
-
-  <div class="datos-usuario">
-    <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
-    <p><strong>Apellido:</strong> {{ userData.apellido }}</p>
-    <p><strong>Edad:</strong> {{ userData.edad }}</p>
-    <p><strong>DNI:</strong> {{ userData.dni }}</p>
-    <p><strong>Mail:</strong> {{ userData.mail }}</p>
-  </div>
-
-<div class="horarios-wrapper">
-  <h2>Mis Horarios</h2>
-
-  <div *ngFor="let h of horarios; let i = index" class="horario-row">
-    <select [(ngModel)]="h.especialidad" class="campo">
-      <option value="" disabled selected>Especialidad</option>
-      <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
-    </select>
-
-    <select [(ngModel)]="h.duracion" class="campo">
-      <option [value]="30">30 minutos</option>
-      <option [value]="60">60 minutos</option>
-    </select>
-
-  <input type="date" [(ngModel)]="h.fecha" class="campo" />
-
-
-    <select [(ngModel)]="h.horaInicio" class="campo">
-      <option value="" disabled selected>Inicio</option>
-      <option *ngFor="let hora of horas" [value]="hora">{{ hora }}</option>
-    </select>
-
-    <select [(ngModel)]="h.horaFin" class="campo">
-      <option value="" disabled selected>Fin</option>
-      <option *ngFor="let hora of horas" [value]="hora">{{ hora }}</option>
-    </select>
-
-    <button type="button" class="btn-borrar" (click)="eliminarHorario(i)">🗑️</button>
-  </div>
-
-  <div class="acciones-horarios">
-    <button type="button" class="btn-agregar" (click)="agregarHorario()">➕ Agregar horario</button>
-    <button type="button" class="btn-guardar" (click)="guardarHorarios()">Guardar horarios</button>
-  </div>
-</div>
-
-
-<div class="turnos-container" *ngIf="turnos.length > 0">
-  <h3>Mis Turnos</h3>
-  <div *ngFor="let turno of turnos" class="turno-card">
-    <p><strong>Paciente:</strong> {{ turno.paciente }}</p>
-    <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
-    <p><strong>Fecha:</strong> {{ turno.fecha }} - {{ turno.hora }}</p>
-    <p><strong>Estado:</strong> {{ turno.estado }}</p>
-  </div>
-</div>
- -->
+<!-- 
 <nav class="navbar-clinica">
   <div class="logo">
     <img src="assets/images/icono.ico" alt="Clínica" />
@@ -106,10 +32,11 @@
   <h2>Mis Horarios</h2>
 
   <div *ngFor="let h of horarios; let i = index" class="horario-row">
-    <select [(ngModel)]="h.especialidad" class="campo">
-      <option value="" disabled selected>Especialidad</option>
-      <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
-    </select>
+<select [(ngModel)]="h.especialidad" class="campo">
+  <option value="" disabled>Seleccione una especialidad</option>
+  <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+</select>
+
 
     <select [(ngModel)]="h.duracion" class="campo">
       <option [value]="30">30 minutos</option>
@@ -139,7 +66,7 @@
 </div>
 </div>
 </div>
-<!-- Sección TURNOS -->
+
 <div *ngIf="!mostrarPerfil">
 <div class="filtros">
   <h3>Filtrar por Especialidad:</h3>
@@ -163,7 +90,7 @@
 </div>
 
 
-<!-- LISTADO DE TURNOS -->
+
 <div *ngFor="let turno of turnosFiltrados"
      class="turno-card" 
      [attr.data-estado]="turno.estado?.toLowerCase()">
@@ -191,4 +118,134 @@
 </div>
 
 
+</div> -->
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="toggleVista(false)">Mis Turnos</button></li>
+    <li><button (click)="toggleVista(true)">Mi Perfil</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<!-- PERFIL -->
+<div *ngIf="mostrarPerfil">
+  <div class="perfil-container" *ngIf="userData">
+    <h2>Mi Perfil</h2>
+    <img [src]="userData.fotoPerfil" alt="Foto de perfil" class="foto-perfil" />
+    <div class="datos-usuario">
+      <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
+      <p><strong>Apellido:</strong> {{ userData.apellido }}</p>
+      <p><strong>Edad:</strong> {{ userData.edad }}</p>
+      <p><strong>DNI:</strong> {{ userData.dni }}</p>
+      <p><strong>Mail:</strong> {{ userData.mail }}</p>
+    </div>
+
+    <!-- Horarios -->
+    <div class="horarios-wrapper">
+      <h2>Disponibilidad por especialidad</h2>
+
+      <div *ngFor="let h of horarios; let i = index" class="horario-row">
+        <select [(ngModel)]="h.especialidad" class="campo">
+          <option value="" disabled selected>Seleccionar especialidad</option>
+          <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+        </select>
+
+        <select [(ngModel)]="h.dia" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Seleccionar día</option>
+          <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+        </select>
+
+        <select [(ngModel)]="h.horaInicio" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Desde</option>
+          <option *ngFor="let hora of horas" [value]="hora">{{ hora }}</option>
+        </select>
+
+        <select [(ngModel)]="h.horaFin" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Hasta</option>
+          <option *ngFor="let hora of horas" [value]="hora">{{ hora }}</option>
+        </select>
+
+        <select [(ngModel)]="h.duracion" class="campo" [disabled]="!h.especialidad">
+          <option [value]="30">30 minutos</option>
+          <option [value]="60">60 minutos</option>
+        </select>
+
+        <button type="button" class="btn-borrar" (click)="eliminarHorario(i)">🗑️</button>
+      </div>
+
+      <div class="acciones-horarios">
+        <button type="button" class="btn-agregar" (click)="agregarHorario()">➕ Agregar disponibilidad</button>
+        <button type="button" class="btn-guardar" (click)="guardarHorarios()">Guardar horarios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MIS TURNOS -->
+<div *ngIf="!mostrarPerfil">
+  <!-- Filtros -->
+  <div class="filtros">
+    <h3>Filtrar por Especialidad:</h3>
+    <button
+      *ngFor="let esp of especialidadesUnicas"
+      [class.selected]="filtroEspecialidad === esp"
+      (click)="filtroEspecialidad = esp; aplicarFiltros()">
+      {{ esp }}
+    </button>
+    <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null; aplicarFiltros()">Quitar filtro</button>
+  </div>
+
+  <div class="filtros">
+    <h3>Filtrar por Paciente:</h3>
+    <button
+      *ngFor="let p of pacientesUnicos"
+      [class.selected]="filtroPacienteId === p.id"
+      (click)="filtroPacienteId = p.id; aplicarFiltros()">
+      {{ p.nombre }}
+    </button>
+    <button *ngIf="filtroPacienteId" (click)="filtroPacienteId = null; aplicarFiltros()">Quitar filtro</button>
+  </div>
+
+  <!-- Lista de turnos -->
+  <div class="lista-turnos" *ngIf="turnosFiltrados.length; else sinTurnos">
+<div class="turno-card" *ngFor="let turno of turnosFiltrados" [attr.data-estado]="turno.estado">
+  <p><strong>Paciente:</strong> {{ turno.nombrePaciente }}</p>
+  <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+  <p><strong>Fecha:</strong> {{ turno.fecha }}</p>
+  <p><strong>Hora:</strong> {{ turno.hora }}</p>
+  <p><strong>Estado:</strong> {{ turno.estado }}</p>
+
+  <div class="acciones" *ngIf="
+    puedeAceptar(turno.estado) || 
+    puedeRechazar(turno.estado) || 
+    puedeCancelar(turno.estado) || 
+    turno.estado === 'aceptado' || 
+    turno.encuestaPaciente
+  ">
+    <button *ngIf="puedeAceptar(turno.estado)" (click)="aceptarTurno(turno)">Aceptar</button>
+    <button *ngIf="puedeRechazar(turno.estado)" (click)="rechazarTurno(turno)">Rechazar</button>
+    <button *ngIf="puedeCancelar(turno.estado)" (click)="cancelarTurno(turno)">Cancelar</button>
+    <button *ngIf="turno.estado === 'aceptado'" (click)="finalizarTurno(turno)">Finalizar</button>
+    <button *ngIf="turno.encuestaPaciente" (click)="verResena(turno)">Ver Reseña</button>
+    <button 
+  *ngIf="turno.estado === 'realizado'" 
+  (click)="cargarHistoriaClinica(turno.id)">
+  📋 Historia Clínica
+</button>
+  </div>
+</div>
+
+  </div>
+
+  <!-- Mensaje si no hay turnos -->
+  <ng-template #sinTurnos>
+    <p>No se encontraron turnos con los filtros seleccionados.</p>
+  </ng-template>
 </div>

@@ -1,3 +1,144 @@
+<!-- 
+
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="goTo('mis-turnos-paciente')">Mi perfil</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<h2>Solicitar Turno</h2>
+
+<div>
+  <h3>Seleccionar Profesional:</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+    <div class="profesional-card"
+         *ngFor="let e of especialistas"
+         [class.selected]="formTurno.value.especialistaId === e.id"
+         (click)="formTurno.patchValue({ especialistaId: e.id }); onEspecialistaChange()">
+      <img class="imagen-circular" [src]="e.fotoPerfil || 'assets/images/default-user.png'" alt="Foto">
+      <span>{{ e.nombre }} {{ e.apellido }}</span>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="especialidades.length">
+  <h3>Especialidades:</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+<div class="especialidad-card"
+     *ngFor="let esp of especialidades"
+     [class.selected]="formTurno.value.especialidad === esp"
+     (click)="formTurno.patchValue({ especialidad: esp })">
+  <img [src]="getIconoEspecialidad(esp)" (error)="imgDefault($event)" alt="Icono" />
+  <span>{{ esp }}</span>
+</div>
+
+  </div>
+</div>
+
+
+<div *ngIf="Object.keys(disponibilidadAgrupada).length">
+  <h3>Días con disponibilidad:</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+    <button type="button" class="boton-dia"
+            *ngFor="let fecha of Object.keys(disponibilidadAgrupada)"
+            (click)="formTurno.patchValue({ fecha: fecha, hora: '' })"
+            [class.selected]="formTurno.value.fecha === fecha">
+      {{ fecha }}
+    </button>
+  </div>
+</div>
+
+
+<div *ngIf="formTurno.value.fecha">
+  <h3>Horarios disponibles:</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+    <button type="button" class="boton-horario"
+            *ngFor="let hora of disponibilidadAgrupada[formTurno.value.fecha]"
+            (click)="formTurno.patchValue({ hora: hora })"
+            [class.selected]="formTurno.value.hora === hora">
+      {{ hora }}
+    </button>
+  </div>
+</div>
+
+
+<button type="submit" [disabled]="formTurno.invalid">Confirmar Turno</button> -->
+
+
+<!-- <nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="goTo('mis-turnos-paciente')">Mi perfil</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<h2>Solicitar Turno</h2>
+
+<form *ngIf="formTurno" [formGroup]="formTurno" (ngSubmit)="solicitarTurno()">
+
+  <div>
+    <h3>Seleccionar Especialista:</h3>
+    <button type="button"
+            *ngFor="let e of especialistas"
+            [class.selected]="formTurno.value.especialistaId === e.id"
+            (click)="formTurno.patchValue({ especialistaId: e.id }); onEspecialistaChange()">
+      {{ e.nombre }} {{ e.apellido }}
+    </button>
+  </div>
+
+ 
+  <div *ngIf="especialistaSeleccionado" class="especialista-info">
+    <img [src]="especialistaSeleccionado.fotoPerfil" alt="Foto especialista" class="foto-especialista">
+    <h4>{{ especialistaSeleccionado.nombre }} {{ especialistaSeleccionado.apellido }}</h4>
+  </div>
+
+
+  <div *ngIf="especialidades.length">
+    <h3>Especialidades:</h3>
+    <button type="button"
+            *ngFor="let esp of especialidades"
+            [class.selected]="formTurno.value.especialidad === esp"
+            (click)="formTurno.patchValue({ especialidad: esp, fecha: '', hora: '' }); horariosDelDia = []; cargarDisponibilidadAgrupada()">
+      {{ esp }}
+    </button>
+  </div>
+
+
+  <div *ngIf="Object.keys(disponibilidadAgrupada).length">
+    <h3>Días con disponibilidad:</h3>
+    <div *ngFor="let fecha of Object.keys(disponibilidadAgrupada)">
+      <p><strong>{{ obtenerNombreDia(fecha) | titlecase }} {{ fecha | date:'dd/MM/yyyy' }}</strong></p>
+      <div class="horarios-disponibles">
+        <button type="button"
+                *ngFor="let hora of disponibilidadAgrupada[fecha]"
+                (click)="formTurno.patchValue({ fecha: fecha, hora: hora })"
+                [class.selected]="formTurno.value.fecha === fecha && formTurno.value.hora === hora">
+          {{ hora }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="formTurno.invalid">Confirmar Turno</button>
+</form> -->
+
+
 <nav class="navbar-clinica">
   <div class="logo">
     <img src="assets/images/icono.ico" alt="Clínica" />
@@ -15,47 +156,60 @@
 <h2>Solicitar Turno</h2>
 
 <form *ngIf="formTurno" [formGroup]="formTurno" (ngSubmit)="solicitarTurno()">
-  <!-- todos los campos del formulario -->
 
-
-  <div>
-    <h3>Seleccionar Especialista:</h3>
+  <!-- PROFESIONALES -->
+  <h3>Seleccionar Profesional:</h3>
+  <div class="especialistas-container">
     <button type="button"
             *ngFor="let e of especialistas"
+            class="especialista-card"
             [class.selected]="formTurno.value.especialistaId === e.id"
             (click)="formTurno.patchValue({ especialistaId: e.id }); onEspecialistaChange()">
-      {{ e.nombre }} {{ e.apellido }}
+      <img [src]="e.fotoPerfil" alt="Foto especialista" (error)="imgDefault($event)">
+      <p>{{ e.nombre }} {{ e.apellido }}</p>
     </button>
   </div>
 
-  <!-- Mostrar información del especialista -->
-  <div *ngIf="especialistaSeleccionado" class="especialista-info">
-    <img [src]="especialistaSeleccionado.fotoPerfil" alt="Foto especialista" class="foto-especialista">
-    <h4>{{ especialistaSeleccionado.nombre }} {{ especialistaSeleccionado.apellido }}</h4>
-  </div>
-
-  <!-- Especialidades disponibles -->
+  <!-- ESPECIALIDADES -->
   <div *ngIf="especialidades.length">
     <h3>Especialidades:</h3>
-    <button type="button"
-            *ngFor="let esp of especialidades"
-            [class.selected]="formTurno.value.especialidad === esp"
-            (click)="formTurno.patchValue({ especialidad: esp }); horariosDelDia = []; formTurno.patchValue({ fecha: '', hora: '' })">
-      {{ esp }}
-    </button>
+    <div class="especialidades-container">
+      <button type="button"
+              *ngFor="let esp of especialidades"
+              [class.selected]="formTurno.value.especialidad === esp"
+              (click)="formTurno.patchValue({ especialidad: esp, fecha: '', hora: '' }); horariosDelDia = []; cargarDisponibilidadAgrupada()">
+        <img [src]="getIconoEspecialidad(esp)" alt="Icono especialidad" (error)="imgDefault($event)">
+        <p>{{ esp }}</p>
+      </button>
+    </div>
   </div>
 
-  <label>Fecha:</label>
-  <input type="date" formControlName="fecha" (change)="onFechaChange()">
+  <!-- DÍAS DISPONIBLES -->
+  <div *ngIf="Object.keys(disponibilidadAgrupada).length">
+    <h3>Días con disponibilidad:</h3>
+    <div class="dias-disponibles">
+      <button type="button"
+              *ngFor="let fecha of Object.keys(disponibilidadAgrupada)"
+              class="boton-dia"
+              [class.selected]="formTurno.value.fecha === fecha"
+              (click)="formTurno.patchValue({ fecha: fecha, hora: '' })">
+        {{ fecha }}
+      </button>
+    </div>
 
-  <label>Hora:</label>
-  <div class="horarios-disponibles">
+<div class="horarios-disponibles" *ngIf="formTurno.value.fecha">
+  <h3>Horarios disponibles:</h3>
+
+  <div class="contenedor-horarios">
     <button type="button"
-            *ngFor="let hora of horariosDelDia"
+            *ngFor="let hora of disponibilidadAgrupada[formTurno.value.fecha]"
+            class="boton-horario"
             [class.selected]="formTurno.value.hora === hora"
-            (click)="formTurno.patchValue({ hora })">
+            (click)="formTurno.patchValue({ hora: hora })">
       {{ hora }}
     </button>
+  </div>
+</div>
   </div>
 
   <button type="submit" [disabled]="formTurno.invalid">Confirmar Turno</button>

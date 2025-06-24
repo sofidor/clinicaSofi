@@ -1,0 +1,78 @@
+form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 2px solid #d4d4d4;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+h2, h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #444;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bfbfbf;
+  border-radius: 5px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+button {
+  margin-top: 15px;
+  margin-right: 10px;
+  padding: 10px 15px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #145ca8;
+}
+
+button[type="button"] {
+  background-color: #555;
+}
+
+button[type="button"]:hover {
+  background-color: #333;
+}
+
+hr {
+  margin: 25px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+p {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+}
+
+.ng-invalid.ng-touched input {
+  border-color: red;
+}

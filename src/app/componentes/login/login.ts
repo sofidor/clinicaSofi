@@ -38,25 +38,125 @@ export class Login {
     this.onSubmit();  // Llamamos al método onSubmit para manejar el login
   }
 
-  async onSubmit() {
+//   async onSubmit() {
+//   if (this.loginForm.valid) {
+//     let { email, password } = this.loginForm.value;
+
+//     // Verificar que los campos no estén vacíos
+//     if (!email || !password) {
+//       this.errorMessage = 'Correo y contraseña son obligatorios.';
+//       return;
+//     }
+
+//     try {
+//       // Intentamos hacer login con Supabase
+//       const { error: loginError } = await this.supabaseService.supabase.auth.signInWithPassword({ email, password });
+//       if (loginError) {
+//         this.errorMessage = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+//         return;
+//       }
+//           // Obtener el usuario autenticado
+//       const { data: userData } = await this.supabaseService.supabase.auth.getUser();
+//       console.log('Auth UID:', userData?.user?.id); //
+
+//       // Obtenemos rol y estado del usuario desde la tabla 'usuarios'
+//       const { data, error: userError } = await this.supabaseService.supabase
+//         .from('usuarios')
+//         .select('rol, estado')
+//         .eq('mail', email)
+//         .single();
+
+//       if (userError || !data) {
+//         this.errorMessage = 'No se pudo obtener el estado del usuario.';
+//         await this.supabaseService.supabase.auth.signOut();
+//         return;
+//       }
+
+//       const rol = data.rol?.toLowerCase();
+//       const estado = data.estado?.toLowerCase();
+
+//       // Si es especialista y está inhabilitado, bloqueamos el acceso
+//       if (rol === 'especialista' && estado !== 'activo') {
+//         await this.supabaseService.supabase.auth.signOut();
+//         Swal.fire({
+//           icon: 'error',
+//           title: 'Cuenta inhabilitada',
+//           text: 'Tu cuenta de especialista fue inhabilitada. Contactá al administrador.',
+//           confirmButtonText: 'Aceptar'
+//         });
+//         return;
+//       }
+
+//   localStorage.setItem('rol', rol);  // Guardar rol
+
+//     // Redirigir según el rol
+//     if (rol === 'admin') {
+//       this.router.navigate(['/admin']);
+//     } else if (rol === 'especialista') {
+//       this.router.navigate(['/mis-turnos-especialista']);
+//     } else if (rol === 'paciente') {
+//       this.router.navigate(['/mis-turnos-paciente']);
+//     } else {
+//       this.router.navigate(['/bienvenida']);
+//     }
+
+//       console.log("inicio sesión");
+//       console.log('Email:', email);
+//       console.log('Password:', password);
+      
+//     } catch (error: unknown) {
+//       this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
+//     }
+//   }
+// }
+
+async onSubmit() {
   if (this.loginForm.valid) {
     let { email, password } = this.loginForm.value;
 
-    // Verificar que los campos no estén vacíos
     if (!email || !password) {
       this.errorMessage = 'Correo y contraseña son obligatorios.';
       return;
     }
 
     try {
-      // Intentamos hacer login con Supabase
-      const { error: loginError } = await this.supabaseService.supabase.auth.signInWithPassword({ email, password });
+      // Intentar login
+      const { data: signInResult, error: loginError } = await this.supabaseService.supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      // Si hay error de login
       if (loginError) {
-        this.errorMessage = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+        if (loginError.message.toLowerCase().includes('email not confirmed')) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Correo no verificado',
+            text: 'Por favor, revisá tu correo y verificá tu cuenta antes de iniciar sesión.',
+            confirmButtonText: 'Aceptar'
+          });
+        } else {
+          this.errorMessage = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+        }
         return;
       }
 
-      // Obtenemos rol y estado del usuario desde la tabla 'usuarios'
+      // Obtener datos del usuario autenticado
+      const { data: userData } = await this.supabaseService.supabase.auth.getUser();
+
+      // Verificar si el correo está confirmado
+      if (!userData?.user?.confirmed_at) {
+        await this.supabaseService.supabase.auth.signOut();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Verificá tu correo',
+          text: 'Tu cuenta aún no fue verificada. Revisá tu correo y hacé clic en el enlace de activación.',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
+      }
+
+      // Buscar usuario en la tabla personalizada
       const { data, error: userError } = await this.supabaseService.supabase
         .from('usuarios')
         .select('rol, estado')
@@ -72,7 +172,7 @@ export class Login {
       const rol = data.rol?.toLowerCase();
       const estado = data.estado?.toLowerCase();
 
-      // Si es especialista y está inhabilitado, bloqueamos el acceso
+      // Si es especialista y no está activo
       if (rol === 'especialista' && estado !== 'activo') {
         await this.supabaseService.supabase.auth.signOut();
         Swal.fire({
@@ -84,27 +184,25 @@ export class Login {
         return;
       }
 
-  localStorage.setItem('rol', rol);  // Guardar rol
+      localStorage.setItem('rol', rol);
 
-    // Redirigir según el rol
-    if (rol === 'admin') {
-      this.router.navigate(['/admin']);
-    } else if (rol === 'especialista') {
-      this.router.navigate(['/mis-turnos-especialista']);
-    } else if (rol === 'paciente') {
-      this.router.navigate(['/mis-turnos-paciente']);
-    } else {
-      this.router.navigate(['/bienvenida']);
-    }
+      // Redirigir según el rol
+      if (rol === 'admin') {
+        this.router.navigate(['/admin']);
+      } else if (rol === 'especialista') {
+        this.router.navigate(['/mis-turnos-especialista']);
+      } else if (rol === 'paciente') {
+        this.router.navigate(['/mis-turnos-paciente']);
+      } else {
+        this.router.navigate(['/bienvenida']);
+      }
 
-      console.log("inicio sesión");
-      console.log('Email:', email);
-      console.log('Password:', password);
-    } catch (error: unknown) {
+    } catch (error) {
       this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
     }
   }
 }
+
     goTo(path: string) {
     this.router.navigate([`/registro`]); 
   }

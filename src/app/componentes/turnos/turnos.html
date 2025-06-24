@@ -43,20 +43,22 @@
   </div>
 
   <!-- Turnos -->
-  <div *ngFor="let turno of turnosFiltrados()" class="turno-card {{ turno.estado }}">
-    <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
-    <p><strong>Especialista:</strong> {{ turno.especialista }}</p>
+<div class="turnos-grid">
+  <div *ngFor="let turno of turnosFiltrados()" class="turno-card" [ngClass]="turno.estado">
     <p><strong>Paciente:</strong> {{ turno.paciente }}</p>
-    <p><strong>Fecha:</strong> {{ turno.fecha }} {{ turno.hora }}</p>
+    <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ turno.fecha }}</p>
+    <p><strong>Hora:</strong> {{ turno.hora }}</p>
     <p><strong>Estado:</strong> {{ turno.estado }}</p>
 
-    <!-- Cancelar -->
-    <div *ngIf="puedeCancelar(turno)">
-      <button (click)="mostrarCancelar(turno.id)">Cancelar turno</button>
+    <div class="acciones-turno" *ngIf="puedeCancelar(turno)">
+      <button class="btn-azul" (click)="mostrarCancelar(turno.id)">Cancelar turno</button>
       <div *ngIf="comentarioCancelacion[turno.id] !== undefined">
         <textarea [(ngModel)]="comentarioCancelacion[turno.id]" placeholder="Motivo de cancelación"></textarea>
-        <button (click)="cancelarTurno(turno.id)">Confirmar</button>
+        <button class="btn-rojo" (click)="cancelarTurno(turno.id)">Confirmar</button>
       </div>
     </div>
   </div>
+</div>
+
 </div>

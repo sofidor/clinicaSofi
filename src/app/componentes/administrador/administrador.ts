@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { Supabase } from '../../servicios/supabase';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-administrador',
@@ -49,39 +51,74 @@ export class Administrador implements OnInit {
 
   // Obtener los datos del usuario logueado
   async getCurrentUser() {
-    try {
-      const { data, error } = await this.supabaseService.supabase.auth.getUser();
-      if (error) {
-        this.errorMessage = 'Error al obtener la información del usuario';
-      } else {
-        this.currentUser = data;
-        // Si no es admin, redirigir
-        console.log();
-        if (this.currentUser?.rol?.toLowerCase() !== 'admin') {
-          this.router.navigate(['/home']);
+  try {
+    const { data: session, error: sessionError } = await this.supabaseService.supabase.auth.getUser();
+    if (sessionError || !session.user) {
+      this.errorMessage = 'No se pudo obtener la sesión';
+      this.router.navigate(['/bienvenida']);
+      return;
+    }
+
+    const email = session.user.email;
+
+    const { data: usuario, error } = await this.supabaseService.supabase
+      .from('usuarios')
+      .select('rol')
+      .eq('mail', email)
+      .single();
+
+    if (error || !usuario) {
+      this.errorMessage = 'No se pudo obtener la información del usuario';
+      this.router.navigate(['/bienvenida']);
+      return;
+    }
+
+    const rol = usuario.rol?.toLowerCase();
+    if (rol !== 'admin') {
+      this.router.navigate(['/bienvenida']);
+      return;
+    }
+
+    // Si llegó acá es admin
+    this.currentUser = usuario;
+    
+  } catch (error) {
+    this.errorMessage = 'Hubo un problema al obtener la información del usuario';
+    this.router.navigate(['/bienvenida']);
+  }
+}
+
+
+// Obtener usuarios desde Supabase
+async getUsers() {
+  try {
+    const { data, error } = await this.supabaseService.supabase
+      .from('usuarios')
+      .select('*');
+
+    if (error) {
+      this.errorMessage = 'Error al obtener los usuarios';
+    } else {
+      // Normalizar especialidades si vienen como string tipo JSON
+      this.users = data.map(user => {
+        try {
+          if (
+            typeof user.especialidades === 'string' &&
+            user.especialidades.trim().startsWith('[')
+          ) {
+            user.especialidades = JSON.parse(user.especialidades);
+          }
+        } catch (e) {
+          console.warn('No se pudo parsear especialidades:', user.especialidades);
         }
-      }
-    } catch (error) {
-      this.errorMessage = 'Hubo un problema al obtener la información del usuario';
+        return user;
+      });
     }
+  } catch (error) {
+    this.errorMessage = 'Hubo un problema al cargar los usuarios';
   }
+}
 
-  // Obtener usuarios desde Supabase
-  async getUsers() {
-    try {
-      const { data, error } = await this.supabaseService.supabase
-        .from('usuarios')
-        .select('*'); 
-
-      if (error) {
-        this.errorMessage = 'Error al obtener los usuarios';
-      } else {
-        this.users = data;
-      }
-    } catch (error) {
-      this.errorMessage = 'Hubo un problema al cargar los usuarios';
-    }
-  }
 
   // Función para habilitar o inhabilitar un usuario Especialista
 async toggleUserStatus(userId: string, status: boolean) {
@@ -212,4 +249,33 @@ async toggleUserStatus(userId: string, status: boolean) {
   goTo(path: string) {
     this.router.navigate([path]);  // Redirigir a la ruta proporcionada
   }
+
+   exportarUsuariosAExcel() {
+  if (!this.users.length) {
+    Swal.fire('Atención', 'No hay usuarios para exportar.', 'info');
+    return;
+  }
+
+  const usuariosParaExportar = this.users.map(user => ({
+    Nombre: user.nombre,
+    Apellido: user.apellido,
+    Edad: user.edad,
+    DNI: user.dni,
+    Email: user.mail,
+    Rol: user.rol,
+    Estado: user.estado,
+    Especialidades: Array.isArray(user.especialidades)
+      ? user.especialidades.join(', ')
+      : user.especialidades || 'N/A'
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(usuariosParaExportar);
+  const workbook = { Sheets: { 'Usuarios': worksheet }, SheetNames: ['Usuarios'] };
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  const fecha = new Date().toISOString().slice(0, 10);
+  saveAs(blob, `usuarios_clinica_${fecha}.xlsx`);
+}
+
 }
