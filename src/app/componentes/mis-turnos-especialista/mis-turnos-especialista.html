@@ -130,6 +130,7 @@
   <ul class="navbar-links">
     <li><button (click)="toggleVista(false)">Mis Turnos</button></li>
     <li><button (click)="toggleVista(true)">Mi Perfil</button></li>
+    <li><button (click)="goTo('historias-clinicas-especialista')">Pacientes</button></li>
     <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
   </ul>
 </nav>
@@ -191,27 +192,11 @@
 <!-- MIS TURNOS -->
 <div *ngIf="!mostrarPerfil">
   <!-- Filtros -->
-  <div class="filtros">
-    <h3>Filtrar por Especialidad:</h3>
-    <button
-      *ngFor="let esp of especialidadesUnicas"
-      [class.selected]="filtroEspecialidad === esp"
-      (click)="filtroEspecialidad = esp; aplicarFiltros()">
-      {{ esp }}
-    </button>
-    <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null; aplicarFiltros()">Quitar filtro</button>
-  </div>
+<div class="filtros">
+  <label><strong>🔍 Buscar por cualquier dato:</strong></label>
+  <input [(ngModel)]="busquedaLibre" (ngModelChange)="aplicarFiltros()" placeholder="Buscar..." />
+</div>
 
-  <div class="filtros">
-    <h3>Filtrar por Paciente:</h3>
-    <button
-      *ngFor="let p of pacientesUnicos"
-      [class.selected]="filtroPacienteId === p.id"
-      (click)="filtroPacienteId = p.id; aplicarFiltros()">
-      {{ p.nombre }}
-    </button>
-    <button *ngIf="filtroPacienteId" (click)="filtroPacienteId = null; aplicarFiltros()">Quitar filtro</button>
-  </div>
 
   <!-- Lista de turnos -->
   <div class="lista-turnos" *ngIf="turnosFiltrados.length; else sinTurnos">
@@ -222,23 +207,43 @@
   <p><strong>Hora:</strong> {{ turno.hora }}</p>
   <p><strong>Estado:</strong> {{ turno.estado }}</p>
 
+<button 
+  *ngIf="turno.estado === 'realizado'" 
+  class="boton-historia" 
+  (click)="mostrarHistoria[turno.id] = !mostrarHistoria[turno.id]">
+  <i class="fas fa-dna"></i> 
+  {{ mostrarHistoria[turno.id] ? 'Ocultar Historia Clínica' : 'Ver Historia Clínica' }}
+</button>
+
+
+<div *ngIf="mostrarHistoria[turno.id] && turno.historia" class="historia-box">
+  <h4>🩺 Historia Clínica</h4>
+  <p><strong>Altura:</strong> {{ turno.historia.altura }} cm</p>
+  <p><strong>Peso:</strong> {{ turno.historia.peso }} kg</p>
+  <p><strong>Presión:</strong> {{ turno.historia.presion }}</p>
+  <p><strong>Temperatura:</strong> {{ turno.historia.temperatura }} °C</p>
+
+  <ul>
+    <li *ngFor="let clave of getClaves(turno.historia.datos_extra)">
+      {{ clave }}: {{ turno.historia.datos_extra[clave] }}
+    </li>
+  </ul>
+</div>
+
+
   <div class="acciones" *ngIf="
     puedeAceptar(turno.estado) || 
     puedeRechazar(turno.estado) || 
     puedeCancelar(turno.estado) || 
     turno.estado === 'aceptado' || 
-    turno.encuestaPaciente
+    turno.calificacionPaciente
   ">
     <button *ngIf="puedeAceptar(turno.estado)" (click)="aceptarTurno(turno)">Aceptar</button>
     <button *ngIf="puedeRechazar(turno.estado)" (click)="rechazarTurno(turno)">Rechazar</button>
     <button *ngIf="puedeCancelar(turno.estado)" (click)="cancelarTurno(turno)">Cancelar</button>
     <button *ngIf="turno.estado === 'aceptado'" (click)="finalizarTurno(turno)">Finalizar</button>
-    <button *ngIf="turno.encuestaPaciente" (click)="verResena(turno)">Ver Reseña</button>
-    <button 
-  *ngIf="turno.estado === 'realizado'" 
-  (click)="cargarHistoriaClinica(turno.id)">
-  📋 Historia Clínica
-</button>
+    <button *ngIf="turno.calificacionPaciente" (click)="verResena(turno)">Ver Reseña</button>
+    
   </div>
 </div>
 

@@ -28,6 +28,77 @@
   </div>
 </div>
 
+<div *ngIf="mostrarPerfil && historiasClinicas.length > 0" class="historias-clinicas">
+  <!-- <h3>Historial Clínico</h3>
+  <button class="btn-download-all" (click)="descargarHistoriaClinica()">📄 Descargar Todo el Historial Clínico</button>
+  <div style="margin-bottom: 1rem;">
+  <label for="select-profesional"><strong>📋 Descargar historia por profesional:</strong></label>
+  <select id="select-profesional" [(ngModel)]="filtroEspecialistaSeleccionado">
+    <option value="" disabled selected>Seleccionar especialista</option>
+   <option *ngFor="let e of especialistas" [value]="e.mail">
+  {{ e.nombre }} {{ e.apellido }}
+</option>
+  </select>
+  <button 
+    class="btn-download-all" 
+    style="margin-top: 0.5rem;" 
+    [disabled]="!filtroEspecialistaSeleccionado" 
+    (click)="descargarHistoriaPorEspecialista(filtroEspecialistaSeleccionado)">
+    📥 Descargar por profesional
+  </button>
+</div> -->
+
+<div class="historial-header">
+  <h3>Historial Clínico</h3>
+
+  <div class="descarga-contenedor">
+    <button class="btn-descarga-total" (click)="descargarHistoriaClinica()">
+      📄 Descargar Todo el Historial Clínico
+    </button>
+
+    <div class="descarga-individual">
+      <label for="select-profesional">
+        <strong>📋 Por profesional:</strong>
+      </label>
+      <select id="select-profesional" [(ngModel)]="filtroEspecialistaSeleccionado">
+        <option value="" disabled selected>Seleccionar especialista</option>
+        <option *ngFor="let e of especialistas" [value]="e.mail">
+          {{ e.nombre }} {{ e.apellido }}
+        </option>
+      </select>
+      <button 
+        class="btn-descarga-por" 
+        [disabled]="!filtroEspecialistaSeleccionado" 
+        (click)="descargarHistoriaPorEspecialista(filtroEspecialistaSeleccionado)">
+        📥 Descargar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+  <div *ngFor="let h of historiasClinicas" class="card">
+    <div class="card-header">
+      <p><strong>Fecha:</strong> {{ h.fecha | date:'short' }}</p>
+      <p><strong>Especialista:</strong> {{ getNombreEspecialista(h.especialista_id) }}</p>
+      <p><strong>Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
+    </div>
+    <div class="card-body">
+      <p><strong>Altura:</strong> {{ h.altura }} cm</p>
+      <p><strong>Peso:</strong> {{ h.peso }} kg</p>
+      <p><strong>Presión:</strong> {{ h.presion }}</p>
+      <p><strong>Temperatura:</strong> {{ h.temperatura }} °C</p>
+      <ul>
+        <li *ngFor="let clave of getClaves(h.datos_extra)">
+          {{ clave }}: {{ h.datos_extra[clave] }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- TURNOS -->
 <div class="hero-background" *ngIf="!mostrarPerfil">
   <div class="turnos-wrapper">
@@ -35,34 +106,38 @@
 
    
     <!-- Filtros -->
-    <div class="filtro-unico">
-    <div class="filtros-especialidad">
-        <h3>Filtrar por Especialidad:</h3>
-        <button *ngFor="let esp of especialidades"
-                [class.selected]="filtroEspecialidad === esp"
-                (click)="filtroEspecialidad = esp">
-        {{ esp }}
-        </button>
-        <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null">Quitar filtro</button>
-    </div>
+<div class="filtro-busqueda-libre">
+  <label for="busquedaLibre">🔎 Buscar por cualquier dato (turno o historia clínica):</label>
+  <input id="busquedaLibre" type="text" [(ngModel)]="busquedaLibre" placeholder="Ej: Dermatologia, Comedones, ..." />
+</div>
 
-    <div class="filtros-doctor">
-        <h3>Filtrar por Especialista:</h3>
-        <button *ngFor="let doc of especialistas"
-                [class.selected]="filtroEspecialista === doc"
-                (click)="filtroEspecialista = doc">
-        {{ doc }}
-        </button>
-        <button *ngIf="filtroEspecialista" (click)="filtroEspecialista = null">Quitar filtro</button>
-    </div>
-    </div>
+      <div *ngFor="let turno of turnosFiltrados()" [ngClass]="'turno-card ' + turno.estado">
+  <p><strong>Especialista:</strong> {{ getNombreEspecialista(turno.especialista) }}</p>
+  <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+<p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }} {{ turno.hora }}</p>
+  <div class="estado" [ngClass]="turno.estado">Estado: {{ turno.estado | uppercase }}</div>
 
-    <!-- Lista -->
-    <div *ngFor="let turno of turnosFiltrados()" [ngClass]="'turno-card ' + turno.estado">
-      <p><strong>Especialista:</strong> {{ turno.especialista }}</p>
-      <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
-      <p><strong>Fecha:</strong> {{ turno.fecha | date:'shortDate' }} {{ turno.hora }}</p>
-      <div class="estado" [ngClass]="turno.estado">Estado: {{ turno.estado | uppercase }}</div>
+  <!-- Mostrar botón solo si el turno fue realizado -->
+<ng-container *ngIf="turno.estado === 'realizado' && historiaDelTurno(turno.id)">
+<button class="btn-diagnostico" (click)="toggleHistoria(turno.id)">
+  {{ historiaVisible[turno.id] ? 'Ocultar' : 'Ver' }} Historia Clínica
+</button>
+
+  <div *ngIf="historiaVisible[turno.id]" class="historia-clinica-box">
+    <h4>🩺 Historia Clínica</h4>
+    <ng-container *ngIf="historiaDelTurno(turno.id) as historia">
+      <p><strong>Altura:</strong> {{ historia.altura }} cm</p>
+      <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
+      <p><strong>Presión:</strong> {{ historia.presion }}</p>
+      <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>
+      <ul>
+        <li *ngFor="let clave of getClaves(historia.datos_extra)">
+          {{ clave }}: {{ historia.datos_extra[clave] }}
+        </li>
+      </ul>
+    </ng-container>
+  </div>
+</ng-container>
 
       <!-- Acciones -->
       <div class="acciones">

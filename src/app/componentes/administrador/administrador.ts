@@ -7,11 +7,19 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import { FormatoDniPipe } from '../../pipes/formatodni-pipe';
+import { ToLowerCasePipe } from '../../pipes/tolowercase-pipe';
+import { EstadoColorPipe } from '../../pipes/estado-color-pipe';
+import { DisableIfInvalidDirective } from '../../directivas/disable-if-empty';
+import { HoverZoom } from '../../directivas/hover-zoom';
+import { AppBackdropClick } from '../../directivas/app-backdrop-click';
+
 
 @Component({
   selector: 'app-administrador',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormatoDniPipe,ToLowerCasePipe,EstadoColorPipe,HoverZoom,DisableIfInvalidDirective,AppBackdropClick],
   templateUrl: './administrador.html',
   styleUrls: ['./administrador.scss']
 })
@@ -25,9 +33,20 @@ export class Administrador implements OnInit {
   currentUser: any = {};  // Almacenamos la información del usuario logueado
   formAdmin!: FormGroup; // Formulario para crear administrador
 
+  mostrarModalHistoria: boolean = false;
+historialSeleccionado: any[] = [];
+pacienteSeleccionado: any = null;
+mapaTurnos: Record<string, any> = {};
+
+pacientes: any[] = [];
+
+mostrarPacientes: boolean = false;
+
+
+
   constructor(private fb: FormBuilder, private supabaseService: Supabase, private router: Router) {}
 
-  ngOnInit(): void {
+    ngOnInit(): void{
     this.getUsers(); 
     this.getCurrentUser();  // Obtener la información del usuario logueado
     this.createAdminForm(); // Crear el formulario para admin
@@ -90,6 +109,36 @@ export class Administrador implements OnInit {
 
 
 // Obtener usuarios desde Supabase
+// async getUsers() {
+//   try {
+//     const { data, error } = await this.supabaseService.supabase
+//       .from('usuarios')
+//       .select('*');
+
+//     if (error) {
+//       this.errorMessage = 'Error al obtener los usuarios';
+//     } else {
+//       // Normalizar especialidades si vienen como string tipo JSON
+//       this.users = data.map(user => {
+//         try {
+//           if (
+//             typeof user.especialidades === 'string' &&
+//             user.especialidades.trim().startsWith('[')
+//           ) {
+//             user.especialidades = JSON.parse(user.especialidades);
+//           }
+//         } catch (e) {
+//           console.warn('No se pudo parsear especialidades:', user.especialidades);
+//         }
+
+//         return user;
+//       });
+//     }
+//   } catch (error) {
+//     this.errorMessage = 'Hubo un problema al cargar los usuarios';
+//   }
+// }
+
 async getUsers() {
   try {
     const { data, error } = await this.supabaseService.supabase
@@ -111,13 +160,16 @@ async getUsers() {
         } catch (e) {
           console.warn('No se pudo parsear especialidades:', user.especialidades);
         }
+
         return user;
       });
+        this.pacientes = this.users.filter(u => u.rol?.toLowerCase() === 'paciente');
     }
   } catch (error) {
     this.errorMessage = 'Hubo un problema al cargar los usuarios';
   }
 }
+
 
 
   // Función para habilitar o inhabilitar un usuario Especialista
@@ -148,6 +200,9 @@ async toggleUserStatus(userId: string, status: boolean) {
   } catch (error) {
     this.errorMessage = 'Hubo un problema al actualizar el estado';
   }
+}
+cerrarModal() {
+  this.mostrarModalHistoria = false;
 }
 
 
@@ -247,7 +302,7 @@ async toggleUserStatus(userId: string, status: boolean) {
 
   // Redirigir a la ruta proporcionada
   goTo(path: string) {
-    this.router.navigate([path]);  // Redirigir a la ruta proporcionada
+    this.router.navigate([path]); 
   }
 
    exportarUsuariosAExcel() {
@@ -266,7 +321,9 @@ async toggleUserStatus(userId: string, status: boolean) {
     Estado: user.estado,
     Especialidades: Array.isArray(user.especialidades)
       ? user.especialidades.join(', ')
-      : user.especialidades || 'N/A'
+      : user.especialidades || 'N/A' ,
+    ObraSocial: user.obraSocial || 'N/A' 
+
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(usuariosParaExportar);
@@ -277,5 +334,83 @@ async toggleUserStatus(userId: string, status: boolean) {
   const fecha = new Date().toISOString().slice(0, 10);
   saveAs(blob, `usuarios_clinica_${fecha}.xlsx`);
 }
+
+  getClaves(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+async verHistoriaClinica(pacienteId: string) {
+  // Traer datos del paciente
+  const { data: paciente } = await this.supabaseService.supabase
+    .from('usuarios')
+    .select('*')
+    .eq('id', pacienteId)
+    .single();
+  this.pacienteSeleccionado = paciente;
+
+  // Traer historias clínicas
+  const { data: historias } = await this.supabaseService.supabase
+    .from('historia_clinica')
+    .select('*')
+    .eq('paciente_id', pacienteId);
+  this.historialSeleccionado = historias || [];
+
+  // Traer turnos asociados
+  const turnoIds = this.historialSeleccionado.map(h => h.turno_id);
+  if (turnoIds.length) {
+    const { data: turnosHistoria } = await this.supabaseService.supabase
+      .from('turnos')
+      .select('id, especialidad, fecha, hora')
+      .in('id', turnoIds);
+
+    turnosHistoria?.forEach(t => {
+      this.mapaTurnos[t.id] = t;
+    });
+  }
+
+  this.mostrarModalHistoria = true;
+}
+datosTurno(id: string): any {
+  return this.mapaTurnos[id] || {};
+}
+
+async descargarHistoriaClinica() {
+  const doc = new jsPDF();
+  const logoUrl = 'assets/images/logo.png';
+  doc.addImage(logoUrl, 'PNG', 15, 10, 15, 15);
+
+  doc.setFontSize(16);
+  doc.text(`Historia Clínica de ${this.pacienteSeleccionado?.nombre} ${this.pacienteSeleccionado?.apellido}`, 35, 18);
+  doc.setFontSize(10);
+  doc.text('Emitido: ' + new Date().toLocaleString(), 35, 25);
+
+  let y = 40;
+
+  this.historialSeleccionado.forEach(h => {
+    const datos = [
+      `Fecha: ${new Date(h.fecha).toLocaleString()}`,
+      `Especialidad: ${this.datosTurno(h.turno_id)?.especialidad || '-'}`,
+      `Altura: ${h.altura || 'N/A'} cm`,
+      `Peso: ${h.peso || 'N/A'} kg`,
+      `Presión: ${h.presion || 'N/A'}`,
+      `Temperatura: ${h.temperatura || 'N/A'} °C`,
+    ];
+    datos.forEach(dato => {
+      doc.text(dato, 15, y);
+      y += 8;
+    });
+    if (h.datos_extra) {
+      doc.text('Otros Datos:', 15, y);
+      y += 8;
+      Object.keys(h.datos_extra).forEach(clave => {
+        doc.text(`${clave}: ${h.datos_extra[clave]}`, 20, y);
+        y += 8;
+      });
+    }
+    y += 10;
+  });
+
+  doc.save(`historia_clinica_${this.pacienteSeleccionado?.apellido}.pdf`);
+}
+
 
 }

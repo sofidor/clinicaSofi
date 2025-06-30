@@ -310,3 +310,160 @@ button[ng-reflect-ng-if="false"] {
   text-align: center;
   margin-top: 20px;
 }
+
+.modal-historia {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 2rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    h3 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-close, .btn-pdf {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-close {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-pdf {
+      background-color: #007bff;
+      color: white;
+    }
+  }
+
+  .card-historia {
+    border: 1px solid #ccc;
+    border-left: 6px solid #007bff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: #f9f9f9;
+
+    .card-header {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .card-body p {
+      margin: 0.3rem 0;
+    }
+
+    ul {
+      margin: 0.5rem 0 0 1rem;
+      padding-left: 1rem;
+    }
+  }
+}
+.paciente-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: start;
+  margin: 2rem 0;
+}
+
+.favbutton {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.favbutton:hover {
+  transform: scale(1.1);
+}
+
+.fav-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 2px;
+}
+
+.nombre-paciente {
+  font-size: 0.7rem;
+  color: #111827;
+  text-align: center;
+  white-space: nowrap;
+}
+.paciente-toggle-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.btn-toggle-pacientes {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-toggle-pacientes:hover {
+  background-color: #3b82f6;
+}

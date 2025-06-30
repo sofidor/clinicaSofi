@@ -312,3 +312,26 @@ input {
 .acciones button:nth-child(5) {
   background-color: #6c757d;
 }
+.boton-historia {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #6f42c1; 
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: #5936a2;
+  }
+
+  &:active {
+    background-color: #4a298f;
+    transform: scale(0.98);
+  }
+}

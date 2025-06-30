@@ -9,6 +9,7 @@
     </div>
   </div>
 <ul class="navbar-links">
+  <li><button (click)="goTo('informes')">Informes</button></li>
       <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
       <li><button (click)="goTo('registro')">Registrar usuario</button></li>
        <li><button (click)="goTo('turnos')">Turnos</button></li>
@@ -18,6 +19,30 @@
 </nav>
 
   <h2>Administrar Usuarios</h2>
+
+  <div class="paciente-toggle-container">
+  <button class="btn-toggle-pacientes" (click)="mostrarPacientes = !mostrarPacientes">
+    👤 Pacientes
+  </button>
+</div>
+
+<div class="paciente-grid" *ngIf="mostrarPacientes">
+  <button 
+    *ngFor="let paciente of pacientes"
+    class="favbutton" 
+    (click)="verHistoriaClinica(paciente.id)"
+  >
+    <img 
+      *ngIf="paciente.fotoPerfil" 
+      [src]="paciente.fotoPerfil" 
+      alt="foto" 
+      class="fav-img"
+    />
+    <span class="nombre-paciente">{{ paciente.nombre }}</span>
+  </button>
+</div>
+
+
 
   <!-- Mostrar mensaje de error si existe -->
   <div *ngIf="errorMessage" class="error-message">
@@ -52,15 +77,19 @@
       <tbody>
         <tr *ngFor="let user of users">
           <td>
-            <img *ngIf="user.fotoPerfil" [src]="user.fotoPerfil" alt="Foto de perfil" class="user-img" />
+            <img *ngIf="user.fotoPerfil" 
+     [src]="user.fotoPerfil" 
+     alt="Foto de perfil" 
+     class="user-img" 
+     appHoverZoom />
           </td>
-          <td>{{ user.nombre }}</td>
-          <td>{{ user.apellido }}</td>
+          <td>{{ user.nombre | tolowercase }}</td>
+          <td>{{ user.apellido | tolowercase }}</td>
           <td>{{ user.edad }}</td>
-          <td>{{ user.dni }}</td>
-          <td>{{ user.mail }}</td>
+          <td>{{ (user.dni + '') | formatodni }}</td>
+          <td>{{ user.mail}}</td>
           <td>{{ user.rol }}</td>
-          <td>{{ user.obraSocial }}</td>
+          <td>{{ user.obraSocial | tolowercase }}</td>
           <td>
           <ng-container *ngIf="isArray(user.especialidades); else textoPlano">
             <span class="especialidad-pill" *ngFor="let esp of user.especialidades">
@@ -71,7 +100,7 @@
             {{ user.especialidades }}
           </ng-template>
           </td>
-          <td>{{ user.estado }}</td>
+         <td>{{ user.estado | estadoColor }}</td>
          <td>
   <ng-container *ngIf="user.rol?.toLowerCase() === 'especialista'">
     <button
@@ -89,14 +118,59 @@
       ❌ Inhabilitar
     </button>
   </ng-container>
-</td>
+  <ng-container *ngIf="user.rol?.toLowerCase() === 'paciente'">
+  <button class="btn-historia" (click)="verHistoriaClinica(user.id)">🩺 Ver Historia Clínica</button>
+</ng-container>
 
-
-         
+</td>         
         </tr>
       </tbody>
     </table>
   </div>
+
+ <!-- MODAL Historia Clínica -->
+<div 
+  class="modal-historia"
+  *ngIf="mostrarModalHistoria"
+  [appBackdropClick]="cerrarModal"
+  [ngClass]="{ 'show': mostrarModalHistoria, 'hide': !mostrarModalHistoria }"
+>
+
+
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🩺 Historia Clínica de {{ pacienteSeleccionado?.nombre }} {{ pacienteSeleccionado?.apellido }}</h3>
+      <div class="modal-actions">
+        <button class="btn-close" (click)="mostrarModalHistoria = false">❌ Cerrar</button>
+        <button class="btn-pdf" (click)="descargarHistoriaClinica()">📄 Descargar PDF</button>
+      </div>
+    </div>
+
+    <div *ngFor="let h of historialSeleccionado" class="card-historia">
+      <div class="card-header">
+        <p><strong>🗓 Fecha:</strong> {{ h.fecha | date:'fullDate' }} {{ h.fecha | date:'shortTime' }}</p>
+        <p><strong>🔬 Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
+      </div>
+      <div class="card-body">
+        <p><strong>📏 Altura:</strong> {{ h.altura }} cm</p>
+        <p><strong>⚖️ Peso:</strong> {{ h.peso }} kg</p>
+        <p><strong>💓 Presión:</strong> {{ h.presion }}</p>
+        <p><strong>🌡 Temperatura:</strong> {{ h.temperatura }} °C</p>
+
+        <div *ngIf="h.datos_extra">
+          <p><strong>📝 Datos adicionales:</strong></p>
+          <ul>
+            <li *ngFor="let clave of getClaves(h.datos_extra)">
+              {{ clave }}: {{ h.datos_extra[clave] }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
   <!-- Formulario para crear administrador -->
   <div *ngIf="modo === 'crear-admin'" class="create-admin-container">
@@ -129,7 +203,8 @@
         accept="image/*"
       />
 
-      <button type="submit">Crear Administrador</button>
+      <button type="submit" [appDisableIfInvalid]="formAdmin">Crear Administrador</button>
+
       <button type="button" (click)="volverATabla()">← Volver</button>
 
     </form>

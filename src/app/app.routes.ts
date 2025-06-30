@@ -10,6 +10,8 @@ import { Turnos } from './componentes/turnos/turnos';
 import { SolicitarTurnoAdmin } from './componentes/solicitar-turno-admin/solicitar-turno-admin';
 import { RoleGuard } from './guards/role-guard';
 import { HistoriaClinica } from './componentes/historia-clinica/historia-clinica';
+import { HistoriasClinicasEspecialista } from './componentes/historias-clinicas-especialista/historias-clinicas-especialista';
+import { Informes } from './componentes/informes/informes';
 
 
 // export const routes: Routes = [
@@ -22,7 +24,7 @@ import { HistoriaClinica } from './componentes/historia-clinica/historia-clinica
 //   { path: 'mis-turnos-paciente', component: MisTurnosPaciente},  
 //   { path: 'solicitar-turno', component: SolicitarTurno},  
 //   { path: 'turnos', component: Turnos},
-//    { path: 'solicitar-turno-admin', component: SolicitarTurnoAdmin},  
+//    { path: 'solicitar-turno-admin', comcomoponent: SolicitarTurnoAdmin},  
   
 // ];
 export const routes: Routes = [
@@ -31,6 +33,8 @@ export const routes: Routes = [
 { path: 'login', component: Login, data: { animation: 'LoginPage' }},
 { path: 'registro', component: Registro, data: { animation: 'RegistroPage' } },
 { path: 'historia-clinica/:id', component: HistoriaClinica, data: { animation: 'HistoriaPage' } },
+{ path: 'historias-clinicas-especialista', component: HistoriasClinicasEspecialista, data: { animation: 'HistoriasClinicasEspecialista' } },
+
 
   //  Solo Admin
   { 
@@ -72,11 +76,18 @@ export const routes: Routes = [
     data: { roles: ['admin'] , animation: 'TurnosPage'}
   },
 
+    { 
+    path: 'turnos', 
+    component: Turnos,
+    canActivate: [RoleGuard],
+    data: { roles: ['admin'] , animation: 'TurnosPage'}
+  },
+
   // Solo Admin
   { 
-    path: 'solicitar-turno-admin', 
-    component: SolicitarTurnoAdmin,
+    path: 'informes', 
+    component: Informes,
     canActivate: [RoleGuard],
-    data: { roles: ['admin'] ,animation: 'SolicitarTurnoAdminPage' }
+    data: { roles: ['admin'] ,animation: 'InformesPage' }
   }
 ];

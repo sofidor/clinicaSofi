@@ -9,9 +9,10 @@
     </div>
   </div>
 <ul class="navbar-links">
-      <li><button (click)="goTo('solicitar-turno')">Solicitar Turno</button></li>
+      <li><button (click)="goTo('admin')">Usuarios</button></li>
+      <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
       <li><button (click)="goTo('registro')">Registrar usuario</button></li>
-       <li><button (click)="goTo('turnos')">Turnos</button></li>    
+      <li><button (click)="goTo('turnos')">Turnos</button></li>    
   <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
 </ul>
 </nav>
@@ -31,21 +32,15 @@
       <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null">Quitar filtro</button>
     </div>
 
-    <div class="filtros-doctor">
-      <h3>Filtrar por Especialista:</h3>
-      <button *ngFor="let doc of especialistas"
-              [class.selected]="filtroEspecialista === doc"
-              (click)="filtroEspecialista = doc">
-        {{ doc }}
-      </button>
-      <button *ngIf="filtroEspecialista" (click)="filtroEspecialista = null">Quitar filtro</button>
-    </div>
-  </div>
+<input type="text" [(ngModel)]="busquedaNombre" placeholder="Buscar por nombre o apellido..." />
+
+
 
   <!-- Turnos -->
 <div class="turnos-grid">
   <div *ngFor="let turno of turnosFiltrados()" class="turno-card" [ngClass]="turno.estado">
-    <p><strong>Paciente:</strong> {{ turno.paciente }}</p>
+   <p><strong>Paciente:</strong> {{ turno.pacienteNombre }}</p>
+   <p><strong>Especialista:</strong> {{ turno.especialistaNombre }}</p>
     <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
     <p><strong>Fecha:</strong> {{ turno.fecha }}</p>
     <p><strong>Hora:</strong> {{ turno.hora }}</p>

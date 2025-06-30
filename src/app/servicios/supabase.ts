@@ -63,7 +63,7 @@ export class Supabase {
     }
   }
 
-  // Función para iniciar sesión
+
   
 // Método para iniciar sesión utilizando el sistema de autenticación de Supabase
 async signIn(email: string, password: string) {
@@ -118,6 +118,120 @@ getPublicUrl(path: string): string {
   const { data } = this.supabase.storage.from('imagenes').getPublicUrl(path);
   return data?.publicUrl || '';
 }
+
+//Obtener logs ingreso
+
+async getLogsIngreso() {
+  const { data, error } = await this.supabase
+    .from('logs_ingreso')
+    .select('*')
+    .order('fecha', { ascending: false });
+
+  if (error) {
+    console.error('Error al obtener logs:', error.message);
+    return [];
+  }
+
+  return data;
+}
+
+//Obtener turnos especialidad
+async getTurnosPorEspecialidad() {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('especialidad', { count: 'exact', head: false });
+
+  if (error) {
+    console.error('Error al obtener turnos por especialidad:', error.message);
+    return [];
+  }
+
+  // Agrupar y contar
+  const conteo: { [key: string]: number } = {};
+  data.forEach(t => {
+    const esp = t.especialidad || 'Sin especialidad';
+    conteo[esp] = (conteo[esp] || 0) + 1;
+  });
+
+  return Object.entries(conteo).map(([especialidad, cantidad]) => ({
+    especialidad,
+    cantidad
+  }));
+}
+
+//obtener turnos x dia
+async getTurnosPorDia(): Promise<{ [fecha: string]: number }> {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('fecha')
+    .order('fecha', { ascending: true });
+
+  if (error) {
+    console.error('Error al obtener los turnos:', error.message);
+    return {}; // Aseguramos que siempre se devuelva un objeto
+  }
+
+  const agrupados: { [fecha: string]: number } = {};
+  data.forEach((turno: any) => {
+    const fecha = turno.fecha;
+    agrupados[fecha] = (agrupados[fecha] || 0) + 1;
+  });
+
+  return agrupados;
+}
+
+async getTurnosPorMedico(desde: string, hasta: string) {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('especialista, fecha')
+    .gte('fecha', desde)
+    .lte('fecha', hasta);
+
+  if (error) {
+    console.error('Error al obtener turnos por médico:', error);
+    return [];
+  }
+
+  const agrupados: { [email: string]: number } = {};
+  data.forEach(t => {
+    const email = t.especialista;
+    if (email) {
+      agrupados[email] = (agrupados[email] || 0) + 1;
+    }
+  });
+
+  return Object.entries(agrupados).map(([email, cantidad]) => ({
+    email,
+    cantidad
+  }));
+}
+
+async getTurnosFinalizadosPorMedico(desde: string, hasta: string) {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('fecha, estado, especialista') // solo el email
+    .gte('fecha', desde)
+    .lte('fecha', hasta)
+    .eq('estado', 'realizado'); // solo los finalizados
+
+  if (error) {
+    console.error('Error al obtener turnos finalizados por médico:', error.message);
+    return [];
+  }
+
+  const agrupados: { [email: string]: number } = {};
+  data.forEach(t => {
+    const email = t.especialista || 'Sin email';
+    agrupados[email] = (agrupados[email] || 0) + 1;
+  });
+
+  return Object.entries(agrupados).map(([email, cantidad]) => ({
+    email,
+    cantidad
+  }));
+}
+
+
 
 }
 

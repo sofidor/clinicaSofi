@@ -22,44 +22,74 @@ turnos: any[] = [];
   userId: string | null = null;
   esAdmin: boolean = false;
 
+  busquedaNombre: string = '';
+
+
   constructor(private supabase: Supabase, private router: Router) {}
-
   async ngOnInit() {
-    const session = await this.supabase.supabase.auth.getUser();
-    const email = session.data.user?.email;
+  const session = await this.supabase.supabase.auth.getUser();
+  const email = session.data.user?.email;
 
-    const { data: usuario } = await this.supabase.supabase
-      .from('usuarios')
-      .select('rol')
-      .eq('mail', email)
-      .single();
+  const { data: usuario } = await this.supabase.supabase
+    .from('usuarios')
+    .select('rol')
+    .eq('mail', email)
+    .single();
 
-    if (!usuario || usuario.rol !== 'admin') {
-      Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'Solo el Administrador puede acceder.' });
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.esAdmin = true;
-
-    const { data: turnos, error } = await this.supabase.supabase
-      .from('turnos')
-      .select('*');
-
-    if (!error && turnos) {
-      this.turnos = turnos;
-      this.especialidades = [...new Set(turnos.map(t => t.especialidad))];
-      this.especialistas = [...new Set(turnos.map(t => t.especialista))];
-    }
+  if (!usuario || usuario.rol !== 'admin') {
+    Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'Solo el Administrador puede acceder.' });
+    this.router.navigate(['/login']);
+    return;
   }
 
-  turnosFiltrados() {
-    return this.turnos.filter(t => {
-      const matchEsp = this.filtroEspecialidad ? t.especialidad === this.filtroEspecialidad : true;
-      const matchDoc = this.filtroEspecialista ? t.especialista === this.filtroEspecialista : true;
-      return matchEsp && matchDoc;
-    });
-  }
+  this.esAdmin = true;
+
+  // Traer turnos
+  const { data: turnos, error } = await this.supabase.supabase
+    .from('turnos')
+    .select('*');
+
+  if (error || !turnos) return;
+
+  this.turnos = turnos;
+  this.especialidades = [...new Set(turnos.map(t => t.especialidad))];
+
+  // Traer pacientes por UUID
+  const pacienteIds = [...new Set(turnos.map(t => t.paciente))].filter(Boolean);
+  const { data: pacientes } = await this.supabase.supabase
+    .from('usuarios')
+    .select('id, nombre, apellido')
+    .in('id', pacienteIds);
+
+  // Traer especialistas por mail
+  const especialistaMails = [...new Set(turnos.map(t => t.especialista))].filter(Boolean);
+  const { data: especialistas } = await this.supabase.supabase
+    .from('usuarios')
+    .select('mail, nombre, apellido')
+    .in('mail', especialistaMails);
+
+  // Armar mapas
+  const mapaPacientes = new Map(pacientes?.map(p => [p.id, p]) || []);
+  const mapaEspecialistas = new Map(especialistas?.map(e => [e.mail, e]) || []);
+
+  // Enriquecer turnos con nombre y apellido
+  this.turnos = this.turnos.map(t => ({
+    ...t,
+    pacienteNombre: `${mapaPacientes.get(t.paciente)?.nombre || ''} ${mapaPacientes.get(t.paciente)?.apellido || ''}`,
+    especialistaNombre: `${mapaEspecialistas.get(t.especialista)?.nombre || ''} ${mapaEspecialistas.get(t.especialista)?.apellido || ''}`
+  }));
+}
+
+
+turnosFiltrados() {
+  return this.turnos.filter(t => {
+    const matchEsp = this.filtroEspecialidad ? t.especialidad === this.filtroEspecialidad : true;
+    const matchDoc = this.filtroEspecialista ? t.especialista === this.filtroEspecialista : true;
+    const nombreFiltro = this.busquedaNombre.toLowerCase();
+    const coincideNombre = !nombreFiltro || t.pacienteNombre.toLowerCase().includes(nombreFiltro) || t.especialistaNombre.toLowerCase().includes(nombreFiltro);
+    return matchEsp && matchDoc && coincideNombre;
+  });
+}
 
   puedeCancelar(turno: any): boolean {
     return !['aceptado', 'realizado', 'rechazado'].includes(turno.estado);

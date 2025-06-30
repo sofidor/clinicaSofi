@@ -1,35 +1,47 @@
-<div *ngIf="mostrarFormulario; else noDisponible">
+<div class="hero-background"></div> <!-- Fondo fijo -->
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">  
+  </ul>
+</nav>
+
+<div *ngIf="mostrarFormulario; else noDisponible" class="form-container">
   <h2>Cargar Historia Clínica</h2>
 
   <form [formGroup]="formHistoria" (ngSubmit)="guardarHistoria()">
+    <!-- Formulario de datos clínicos -->
     <label>Altura (cm):</label>
-    <input formControlName="altura" type="number" />
+    <input formControlName="altura" type="number" placeholder="Ingrese la altura en cm" />
 
     <label>Peso (kg):</label>
-    <input formControlName="peso" type="number" />
+    <input formControlName="peso" type="number" placeholder="Ingrese el peso en kg" />
 
     <label>Temperatura (°C):</label>
-    <input formControlName="temperatura" type="number" />
+    <input formControlName="temperatura" type="number" placeholder="Ingrese la temperatura en °C" />
 
     <label>Presión:</label>
-    <input formControlName="presion" type="text" />
+    <input formControlName="presion" type="text" placeholder="Ingrese la presión" />
 
     <hr />
     <h3>Datos Extra (máximo 3)</h3>
     <div formArrayName="datosExtra">
-      <div *ngFor="let dato of datosExtra.controls; let i = index" [formGroupName]="i">
+      <div *ngFor="let dato of datosExtra.controls; let i = index" [formGroupName]="i" class="fila-dato-extra">
         <input placeholder="Clave" formControlName="clave" />
         <input placeholder="Valor" formControlName="valor" />
-        <button type="button" (click)="eliminarDatoExtra(i)">Eliminar</button>
+        <button type="button" (click)="eliminarDatoExtra(i)">🗑️</button>
       </div>
     </div>
     <button type="button" (click)="agregarDatoExtra()" [disabled]="datosExtra.length >= 3">+ Agregar Dato</button>
 
     <hr />
-    <button type="submit">Guardar Historia Clínica</button>
+    <button type="submit" [disabled]="formHistoria.invalid">Guardar Historia Clínica</button>
   </form>
 </div>
 
-<ng-template #noDisponible>
-  <p>❌ Este turno aún no ha sido realizado. No se puede cargar la historia clínica.</p>
-</ng-template>
+<ng-template #noDisponible></ng-template>

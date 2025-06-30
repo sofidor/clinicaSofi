@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Supabase } from '../../servicios/supabase';
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -22,7 +23,8 @@ export class HistoriaClinica implements OnInit {
   constructor(
     private fb: FormBuilder,
     private supabase: Supabase,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.formHistoria = this.fb.group({
       altura: ['', [Validators.required]],
@@ -76,9 +78,9 @@ export class HistoriaClinica implements OnInit {
       const { data: historiaExistente } = await this.supabase.supabase
         .from('historia_clinica')
         .select('id')
-        .eq('paciente_id', data.paciente)
-        .eq('especialista_id', data.especialista)
+        .eq('turno_id', this.turnoId)
         .single();
+
 
       if (historiaExistente) {
         this.mostrarFormulario = false;
@@ -102,16 +104,17 @@ export class HistoriaClinica implements OnInit {
 
     const valores = this.formHistoria.value;
 
-    const historia = {
-      paciente_id: this.turno.paciente,
-      especialista_id: this.turno.especialista,
-      fecha: new Date().toISOString(),
-      altura: parseFloat(String(valores.altura).replace(',', '.')),
-      peso: parseFloat(String(valores.peso).replace(',', '.')),
-      temperatura: parseFloat(String(valores.temperatura).replace(',', '.')),
-      presion: parseFloat(String(valores.presion).replace(',', '.')),
-      datos_extra: this.transformarExtras(valores.datosExtra)
-    };
+  const historia = {
+    turno_id: this.turno.id,
+    paciente_id: this.turno.paciente,
+    especialista_id: this.turno.especialista,
+    fecha: new Date().toISOString(),
+    altura: parseFloat(String(valores.altura).replace(',', '.')),
+    peso: parseFloat(String(valores.peso).replace(',', '.')),
+    temperatura: parseFloat(String(valores.temperatura).replace(',', '.')),
+    presion: parseFloat(String(valores.presion).replace(',', '.')),
+    datos_extra: this.transformarExtras(valores.datosExtra)
+  };
 
     const { error } = await this.supabase.supabase
       .from('historia_clinica')
@@ -125,6 +128,7 @@ export class HistoriaClinica implements OnInit {
       this.formHistoria.reset();
       this.datosExtra.clear();
       this.mostrarFormulario = false;
+       this.router.navigate(['/mis-turnos-especialista']);
     }
   }
 
@@ -134,5 +138,9 @@ export class HistoriaClinica implements OnInit {
       resultado[item.clave] = item.valor;
     }
     return resultado;
+  }
+
+    goTo(path: string) {
+    this.router.navigate([`/${path}`]);
   }
 }
