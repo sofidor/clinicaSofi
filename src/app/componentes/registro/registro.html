@@ -30,7 +30,7 @@
       <div class="row">
         <div>
           <label for="nombre">Nombre</label>
-          <input id="nombre" formControlName="nombre" type="text" />
+          <input id="nombre" formControlName="nombre" type="text"appAutoFocus />
           <small *ngIf="nombre?.invalid && nombre?.touched">{{ mensajeError('nombre') }}</small>
         </div>
         <div>
@@ -58,8 +58,13 @@
       <small *ngIf="mail?.invalid && mail?.touched">{{ mensajeError('mail') }}</small>
 
       <label for="password">Contraseña</label>
-      <input id="password" formControlName="password" type="password" />
-      <small *ngIf="password?.invalid && password?.touched">{{ mensajeError('password') }}</small>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <input id="password" formControlName="password" type="password" />
+        <button type="button" appMostrarPassword style="border: none; background: none; cursor: pointer;">👁️</button>
+      </div>
+      <small *ngIf="password?.invalid && password?.touched">
+        {{ mensajeError('password') }}
+      </small>
 
       <div *ngIf="selectedRole === 'Paciente'">
         <label for="obraSocial">Obra Social</label>

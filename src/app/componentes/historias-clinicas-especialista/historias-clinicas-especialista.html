@@ -68,7 +68,7 @@
       <div class="historias-grid">
         <div class="historia-card" *ngFor="let h of historiasDelPaciente">         
           <p><strong>Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
-          <p><strong>Fecha:</strong> {{ datosTurno(h.turno_id)?.fecha }}</p>
+          <p><strong>Fecha:</strong> {{ datosTurno(h.turno_id)?.fecha | date:'dd/MM/yyyy' }}</p>
           <p><strong>Hora:</strong> {{ datosTurno(h.turno_id)?.hora }}</p>
           <p><strong>Altura:</strong> {{ h.altura }} cm</p>
           <p><strong>Peso:</strong> {{ h.peso }} kg</p>

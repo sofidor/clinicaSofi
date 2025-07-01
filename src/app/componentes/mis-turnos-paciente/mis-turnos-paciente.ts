@@ -156,36 +156,75 @@ async ngOnInit() {
     });
   }
 }
+// turnosFiltrados() {
+//   const texto = this.busquedaLibre.toLowerCase().trim();
+//   return this.turnos.filter(t => {
+//     if (!texto) return true;
+
+//     const historia = this.historiasClinicas.find(h => h.turno_id === t.id);
+//     const especialista = this.especialistas.find(e => e.mail === t.especialista);
+//     const nombreCompleto = especialista ? `${especialista.nombre} ${especialista.apellido}`.toLowerCase() : '';
+
+//     const campos = [
+//       t.especialidad,
+//       t.especialista,
+//       nombreCompleto,
+//       t.estado,
+//       t.fecha,
+//       t.hora,
+//       t.comentarioEspecialista || '',
+//       ...(historia ? [
+//         historia.altura,
+//         historia.peso,
+//         historia.presion,
+//         historia.temperatura,
+//         ...Object.entries(historia.datos_extra || {}).map(([clave, valor]) => `${clave}: ${valor}`)
+//       ] : [])
+//     ]
+//     .map(v => String(v).toLowerCase());
+
+//     return campos.some(campo => campo.includes(texto));
+//   });
+// }
+
 turnosFiltrados() {
   const texto = this.busquedaLibre.toLowerCase().trim();
-  return this.turnos.filter(t => {
-    if (!texto) return true;
 
-    const historia = this.historiasClinicas.find(h => h.turno_id === t.id);
-    const especialista = this.especialistas.find(e => e.mail === t.especialista);
-    const nombreCompleto = especialista ? `${especialista.nombre} ${especialista.apellido}`.toLowerCase() : '';
+  return this.turnos
+    .filter(t => {
+      if (!texto) return true;
 
-    const campos = [
-      t.especialidad,
-      t.especialista,
-      nombreCompleto,
-      t.estado,
-      t.fecha,
-      t.hora,
-      t.comentarioEspecialista || '',
-      ...(historia ? [
-        historia.altura,
-        historia.peso,
-        historia.presion,
-        historia.temperatura,
-        ...Object.entries(historia.datos_extra || {}).map(([clave, valor]) => `${clave}: ${valor}`)
-      ] : [])
-    ]
-    .map(v => String(v).toLowerCase());
+      const historia = this.historiasClinicas.find(h => h.turno_id === t.id);
+      const especialista = this.especialistas.find(e => e.mail === t.especialista);
+      const nombreCompleto = especialista ? `${especialista.nombre} ${especialista.apellido}`.toLowerCase() : '';
 
-    return campos.some(campo => campo.includes(texto));
-  });
+      const campos = [
+        t.especialidad,
+        t.especialista,
+        nombreCompleto,
+        t.estado,
+        t.fecha,
+        t.hora,
+        t.comentarioEspecialista || '',
+        ...(historia ? [
+          historia.altura,
+          historia.peso,
+          historia.presion,
+          historia.temperatura,
+          ...Object.entries(historia.datos_extra || {}).map(([clave, valor]) => `${clave}: ${valor}`)
+        ] : [])
+      ].map(v => String(v).toLowerCase());
+
+      return campos.some(campo => campo.includes(texto));
+    })
+    .sort((a, b) => {
+      // Turnos "realizado" van al final
+      if (a.estado === 'realizado' && b.estado !== 'realizado') return 1;
+      if (a.estado !== 'realizado' && b.estado === 'realizado') return -1;
+      return 0; // si son iguales, no cambia el orden
+    });
 }
+
 
 
 // coincideBusquedaLibre(turno: any): boolean {

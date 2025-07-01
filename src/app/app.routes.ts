@@ -34,6 +34,7 @@ export const routes: Routes = [
 { path: 'registro', component: Registro, data: { animation: 'RegistroPage' } },
 { path: 'historia-clinica/:id', component: HistoriaClinica, data: { animation: 'HistoriaPage' } },
 { path: 'historias-clinicas-especialista', component: HistoriasClinicasEspecialista, data: { animation: 'HistoriasClinicasEspecialista' } },
+ { path: 'solicitar-turno-admin', component: SolicitarTurnoAdmin},  
 
 
   //  Solo Admin

@@ -155,7 +155,9 @@
       <div *ngFor="let h of horarios; let i = index" class="horario-row">
         <select [(ngModel)]="h.especialidad" class="campo">
           <option value="" disabled selected>Seleccionar especialidad</option>
-          <option *ngFor="let esp of especialidades" [value]="esp">{{ esp }}</option>
+          <option *ngFor="let esp of especialidades" [value]="esp">
+  {{ formatearEspecialidad(esp) }}
+</option>
         </select>
 
         <select [(ngModel)]="h.dia" class="campo" [disabled]="!h.especialidad">
@@ -203,7 +205,7 @@
 <div class="turno-card" *ngFor="let turno of turnosFiltrados" [attr.data-estado]="turno.estado">
   <p><strong>Paciente:</strong> {{ turno.nombrePaciente }}</p>
   <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
-  <p><strong>Fecha:</strong> {{ turno.fecha }}</p>
+  <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}</p>
   <p><strong>Hora:</strong> {{ turno.hora }}</p>
   <p><strong>Estado:</strong> {{ turno.estado }}</p>
 

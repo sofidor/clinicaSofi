@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #eef2f7;
+  background-color: #bedafc; 
 }
 
 /* Navbar */
@@ -80,13 +80,22 @@ body {
   margin: 20px 0;
   font-size: 2rem;
 }
-
 .logs-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
   padding: 1rem;
+
+  max-height: 500px;
+  overflow-y: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #96dde6;
+  border: 2px solid #ccc;
+  border-radius: 10px;
 }
+
+
 
 .log-card {
   background: #fff;
@@ -157,7 +166,9 @@ body {
 }
 
 .seccion {
+  min-height: calc(100vh - 250px);
   animation: fadeIn 0.3s ease-in-out;
+   background-color: #bedafc; 
 }
 
 @keyframes fadeIn {

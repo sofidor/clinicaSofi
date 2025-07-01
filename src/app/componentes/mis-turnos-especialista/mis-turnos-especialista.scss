@@ -1,7 +1,8 @@
+
 :host {
   display: block;
   padding: 2rem;
-  background-color: #f9fafb;
+  background-color: #bedafc; 
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -196,10 +197,17 @@ input {
 /* FILTROS */
 .filtros {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: center; 
+  gap: 0.5rem;
   margin-bottom: 2rem;
+}
+.filtros input {
+  width: 300px; 
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
 }
 
 .filtros h3 {
@@ -267,8 +275,8 @@ input {
   border-left-color: #dc3545;
 }
 
-.turno-card[data-estado="finalizado"] {
-  background-color: #f0f0f0;
+.turno-card[data-estado="realizado"] {
+  background-color: #c6c6c6;
   border-left-color: #6c757d;
 }
 

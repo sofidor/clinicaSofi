@@ -140,9 +140,17 @@
   box-shadow: 0 0 18px rgba(0, 0, 0, 0.2);
 }
 
+form label {
+  margin-top: 1rem;
+}
+
+form .row {
+  margin-bottom: 1.2rem;
+}
+
 .row {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -161,7 +169,7 @@ label {
 input[type='text'], input[type='number'], input[type='email'], input[type='password'] {
   width: 100%;
   padding: 0.6rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.1rem;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   font-size: 0.95rem;

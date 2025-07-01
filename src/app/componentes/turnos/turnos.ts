@@ -22,8 +22,8 @@ turnos: any[] = [];
   userId: string | null = null;
   esAdmin: boolean = false;
 
-  busquedaNombre: string = '';
-
+  busquedaNombre: string = ''; 
+  busquedaFecha: string = '';
 
   constructor(private supabase: Supabase, private router: Router) {}
   async ngOnInit() {
@@ -81,15 +81,46 @@ turnos: any[] = [];
 }
 
 
+// turnosFiltrados() {
+//   return this.turnos.filter(t => {
+//     const textoFiltro = this.busquedaNombre.toLowerCase();
+//     const coincideTexto =
+//       !textoFiltro ||
+//       t.pacienteNombre.toLowerCase().includes(textoFiltro) ||
+//       t.especialistaNombre.toLowerCase().includes(textoFiltro) ||
+//       t.estado.toLowerCase().includes(textoFiltro)||
+//       t.especialidad.toLowerCase().includes(textoFiltro);
+
+//     const coincideFecha = !this.busquedaFecha || t.fecha === this.busquedaFecha;
+
+//     return coincideTexto && coincideFecha;
+//   });
+// }
+
 turnosFiltrados() {
-  return this.turnos.filter(t => {
-    const matchEsp = this.filtroEspecialidad ? t.especialidad === this.filtroEspecialidad : true;
-    const matchDoc = this.filtroEspecialista ? t.especialista === this.filtroEspecialista : true;
-    const nombreFiltro = this.busquedaNombre.toLowerCase();
-    const coincideNombre = !nombreFiltro || t.pacienteNombre.toLowerCase().includes(nombreFiltro) || t.especialistaNombre.toLowerCase().includes(nombreFiltro);
-    return matchEsp && matchDoc && coincideNombre;
-  });
+  return this.turnos
+    .filter(t => {
+      const textoFiltro = this.busquedaNombre.toLowerCase();
+      const coincideTexto =
+        !textoFiltro ||
+        t.pacienteNombre.toLowerCase().includes(textoFiltro) ||
+        t.especialistaNombre.toLowerCase().includes(textoFiltro) ||
+        t.estado.toLowerCase().includes(textoFiltro) ||
+        t.especialidad.toLowerCase().includes(textoFiltro);
+
+      const coincideFecha = !this.busquedaFecha || t.fecha === this.busquedaFecha;
+
+      return coincideTexto && coincideFecha;
+    })
+    .sort((a, b) => {
+      // ✅ Turnos "realizado" van al final
+      if (a.estado === 'realizado' && b.estado !== 'realizado') return 1;
+      if (a.estado !== 'realizado' && b.estado === 'realizado') return -1;
+      return 0;
+    });
 }
+
+
 
   puedeCancelar(turno: any): boolean {
     return !['aceptado', 'realizado', 'rechazado'].includes(turno.estado);

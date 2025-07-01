@@ -4,7 +4,8 @@ import { Supabase } from '../../servicios/supabase';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { AutoFocus } from '../../directivas/auto-focus';
+import { MostrarPassword } from '../../directivas/mostrar-password';
 
 declare global {
   interface Window {
@@ -16,7 +17,7 @@ declare global {
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,AutoFocus,MostrarPassword],
   templateUrl: './registro.html',
   styleUrls: ['./registro.scss']
 })

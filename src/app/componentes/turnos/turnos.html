@@ -9,10 +9,10 @@
     </div>
   </div>
 <ul class="navbar-links">
-      <li><button (click)="goTo('admin')">Usuarios</button></li>
+    <li><button (click)="goTo('informes')">Informes</button></li>      
       <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
       <li><button (click)="goTo('registro')">Registrar usuario</button></li>
-      <li><button (click)="goTo('turnos')">Turnos</button></li>    
+      <li><button (click)="goTo('admin')">Usuarios</button></li>  
   <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
 </ul>
 </nav>
@@ -21,23 +21,23 @@
   <h2>Gestión de Turnos</h2>
 
   <!-- Filtros -->
-  <div class="filtro-unico">
-    <div class="filtros-especialidad">
-      <h3>Filtrar por Especialidad:</h3>
-      <button *ngFor="let esp of especialidades"
-              [class.selected]="filtroEspecialidad === esp"
-              (click)="filtroEspecialidad = esp">
-        {{ esp }}
-      </button>
-      <button *ngIf="filtroEspecialidad" (click)="filtroEspecialidad = null">Quitar filtro</button>
-    </div>
+<div class="filtro-unico">
+    <input
+      type="text"
+      [(ngModel)]="busquedaNombre"
+      placeholder="Buscar por paciente, especialista o especialidad..."
+    />
 
-<input type="text" [(ngModel)]="busquedaNombre" placeholder="Buscar por nombre o apellido..." />
-
+    <input
+      type="date"
+      [(ngModel)]="busquedaFecha"
+      placeholder="Buscar por fecha"
+    />
+  </div>
 
 
   <!-- Turnos -->
-<div class="turnos-grid">
+<!-- <div class="turnos-grid">
   <div *ngFor="let turno of turnosFiltrados()" class="turno-card" [ngClass]="turno.estado">
    <p><strong>Paciente:</strong> {{ turno.pacienteNombre }}</p>
    <p><strong>Especialista:</strong> {{ turno.especialistaNombre }}</p>
@@ -54,6 +54,25 @@
       </div>
     </div>
   </div>
+</div> -->
+<div class="turnos-grid">
+  <div *ngFor="let turno of turnosFiltrados()" class="turno-card" [ngClass]="turno.estado">
+    <p><strong>Paciente:</strong> {{ turno.pacienteNombre }}</p>
+    <p><strong>Especialista:</strong> {{ turno.especialistaNombre }}</p>
+    <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}</p>
+    <p><strong>Hora:</strong> {{ turno.hora }}</p>
+    <p><strong>Estado:</strong> {{ turno.estado }}</p>
+
+    <div class="acciones-turno" *ngIf="puedeCancelar(turno)">
+      <button class="btn-azul" (click)="mostrarCancelar(turno.id)">Cancelar turno</button>
+      <div *ngIf="comentarioCancelacion[turno.id] !== undefined">
+        <textarea [(ngModel)]="comentarioCancelacion[turno.id]" placeholder="Motivo de cancelación"></textarea>
+        <button class="btn-rojo" (click)="cancelarTurno(turno.id)">Confirmar</button>
+      </div>
+    </div>
+  </div>
 </div>
+
 
 </div>

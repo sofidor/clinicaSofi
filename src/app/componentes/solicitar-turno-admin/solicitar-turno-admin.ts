@@ -48,7 +48,6 @@ export class SolicitarTurnoAdmin implements OnInit {
       .from('usuarios')
       .select('id, nombre, apellido, mail')
       .eq('rol', 'Paciente')
-      .eq('estado', 'activo');
     this.pacientes = pacientes || [];
   }
 

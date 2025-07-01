@@ -18,13 +18,15 @@
 </ul>
 </nav>
 
-  <h2>Administrar Usuarios</h2>
+  <h2 *ngIf="modo === 'tabla'">Administrar Usuarios</h2>
 
-  <div class="paciente-toggle-container">
+
+<div class="paciente-toggle-container" *ngIf="modo === 'tabla'">
   <button class="btn-toggle-pacientes" (click)="mostrarPacientes = !mostrarPacientes">
     👤 Pacientes
   </button>
 </div>
+
 
 <div class="paciente-grid" *ngIf="mostrarPacientes">
   <button 
@@ -132,7 +134,6 @@
 <div 
   class="modal-historia"
   *ngIf="mostrarModalHistoria"
-  [appBackdropClick]="cerrarModal"
   [ngClass]="{ 'show': mostrarModalHistoria, 'hide': !mostrarModalHistoria }"
 >
 
@@ -176,35 +177,58 @@
   <div *ngIf="modo === 'crear-admin'" class="create-admin-container">
     <h3>Crear Administrador</h3>
     <form [formGroup]="formAdmin" (ngSubmit)="createUser(formAdmin.value)">
-      <label for="nombre">Nombre</label>
-      <input id="nombre" formControlName="nombre" required />
+<label for="nombre">Nombre</label>
+<input id="nombre" formControlName="nombre" required appAutoFocus />
+<div class="error-text" *ngIf="formAdmin.get('nombre')?.touched && formAdmin.get('nombre')?.invalid">
+  Ingrese solo letras.
+</div>
 
-      <label for="apellido">Apellido</label>
-      <input id="apellido" formControlName="apellido" required />
+<label for="apellido">Apellido</label>
+<input id="apellido" formControlName="apellido" required />
+<div class="error-text" *ngIf="formAdmin.get('apellido')?.touched && formAdmin.get('apellido')?.invalid">
+  Ingrese solo letras.
+</div>
 
-      <label for="edad">Edad</label>
-      <input id="edad" formControlName="edad" required />
+<label for="edad">Edad</label>
+<input id="edad" formControlName="edad" required />
+<div class="error-text" *ngIf="formAdmin.get('edad')?.touched && formAdmin.get('edad')?.invalid">
+  Ingrese solo numeros.
+</div>
 
-      <label for="dni">DNI</label>
-      <input id="dni" formControlName="dni" required />
+<label for="dni">DNI</label>
+<input id="dni" formControlName="dni" required />
+<div class="error-text" *ngIf="formAdmin.get('dni')?.touched && formAdmin.get('dni')?.invalid">
+  el DNI debe tener 8 dígitos.
+</div>
 
-      <label for="mail">Email</label>
-      <input id="mail" formControlName="mail" required />
+<label for="mail">Email</label>
+<input id="mail" formControlName="mail" required />
+<div class="error-text" *ngIf="formAdmin.get('mail')?.touched && formAdmin.get('mail')?.invalid">
+  Ingrese un correo electrónico válido.
+</div>
 
-      <label for="password">Contraseña</label>
-      <input id="password" formControlName="password" required type="password" />
 
-      <label for="fotoPerfil">Foto de Perfil</label>
-        <input
-        id="fotoPerfil"
-        type="file"
-        (change)="onFileSelected($event)"
-        required
-        accept="image/*"
-      />
+<label for="password">Contraseña</label>
 
-      <button type="submit" [appDisableIfInvalid]="formAdmin">Crear Administrador</button>
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+  <input id="password" type="password" formControlName="password" required />
+  <button type="button" appMostrarPassword style="border: none; background: none; cursor: pointer;">👁️</button>
+</div>
 
+<div class="error-text" *ngIf="formAdmin.get('password')?.touched && formAdmin.get('password')?.invalid">
+  Mínimo 6 caracteres.
+</div>
+
+
+<label for="fotoPerfil">Foto de Perfil</label>
+<input
+  id="fotoPerfil"
+  type="file"
+  (change)="onFileSelected($event)"
+  required
+  accept="image/*"
+/>
+      <button type="submit" [disabled]="formAdmin.invalid">Crear Administrador</button>
       <button type="button" (click)="volverATabla()">← Volver</button>
 
     </form>

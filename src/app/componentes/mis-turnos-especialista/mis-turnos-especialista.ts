@@ -351,34 +351,70 @@ async guardarHorarios() {
     Swal.fire('Eliminado', 'Disponibilidad eliminada correctamente.', 'success');
   }
 
+// aplicarFiltros() {
+//   const texto = this.busquedaLibre?.toLowerCase().trim() || '';
+
+//   this.turnosFiltrados = this.turnos.filter(t => {
+//     const filtroEsp = !this.filtroEspecialidad || t.especialidad === this.filtroEspecialidad;
+//     const filtroPac = !this.filtroPacienteId || t.paciente === this.filtroPacienteId;
+
+//     const camposTurno = [
+//       t.especialidad,
+//       t.estado,
+//       t.nombrePaciente,
+//       t.fecha,
+//       t.hora,
+//       t.comentarioEspecialista
+//     ];
+
+//     const camposHistoria = t.historia ? [
+//       t.historia.altura,
+//       t.historia.peso,
+//       t.historia.presion,
+//       t.historia.temperatura,
+//       ...Object.entries(t.historia.datos_extra || {}).map(([k, v]) => `${k}: ${v}`)
+//     ] : [];
+
+//     const todos = [...camposTurno, ...camposHistoria].map(e => String(e).toLowerCase());
+
+//     return filtroEsp && filtroPac && todos.some(c => c.includes(texto));
+//   });
+// }
 aplicarFiltros() {
   const texto = this.busquedaLibre?.toLowerCase().trim() || '';
 
-  this.turnosFiltrados = this.turnos.filter(t => {
-    const filtroEsp = !this.filtroEspecialidad || t.especialidad === this.filtroEspecialidad;
-    const filtroPac = !this.filtroPacienteId || t.paciente === this.filtroPacienteId;
+  this.turnosFiltrados = this.turnos
+    .filter(t => {
+      const filtroEsp = !this.filtroEspecialidad || t.especialidad === this.filtroEspecialidad;
+      const filtroPac = !this.filtroPacienteId || t.paciente === this.filtroPacienteId;
 
-    const camposTurno = [
-      t.especialidad,
-      t.estado,
-      t.nombrePaciente,
-      t.fecha,
-      t.hora,
-      t.comentarioEspecialista
-    ];
+      const camposTurno = [
+        t.especialidad,
+        t.estado,
+        t.nombrePaciente,
+        t.fecha,
+        t.hora,
+        t.comentarioEspecialista
+      ];
 
-    const camposHistoria = t.historia ? [
-      t.historia.altura,
-      t.historia.peso,
-      t.historia.presion,
-      t.historia.temperatura,
-      ...Object.entries(t.historia.datos_extra || {}).map(([k, v]) => `${k}: ${v}`)
-    ] : [];
+      const camposHistoria = t.historia ? [
+        t.historia.altura,
+        t.historia.peso,
+        t.historia.presion,
+        t.historia.temperatura,
+        ...Object.entries(t.historia.datos_extra || {}).map(([k, v]) => `${k}: ${v}`)
+      ] : [];
 
-    const todos = [...camposTurno, ...camposHistoria].map(e => String(e).toLowerCase());
+      const todos = [...camposTurno, ...camposHistoria].map(e => String(e).toLowerCase());
 
-    return filtroEsp && filtroPac && todos.some(c => c.includes(texto));
-  });
+      return filtroEsp && filtroPac && todos.some(c => c.includes(texto));
+    })
+    .sort((a, b) => {
+      // Finalizados al final
+      if (a.estado === 'realizado' && b.estado !== 'realizado') return 1;
+      if (a.estado !== 'realizado' && b.estado === 'realizado') return -1;
+      return 0;
+    });
 }
 
 
@@ -468,6 +504,18 @@ verResena(turno: any) {
     icon: 'info'
   });
 }
+
+formatearEspecialidad(esp: any): string {
+  if (Array.isArray(esp)) {
+    return esp.join(', ');
+  }
+  if (typeof esp === 'string') {
+    // Si ya está bien, lo muestra así
+    return esp.replace(/[\[\]"]+/g, '');
+  }
+  return String(esp);
+}
+
 
 
   toggleVista(mostrar: boolean) {

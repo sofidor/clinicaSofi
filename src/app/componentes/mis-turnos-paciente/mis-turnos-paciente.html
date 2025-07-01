@@ -79,7 +79,7 @@
 
   <div *ngFor="let h of historiasClinicas" class="card">
     <div class="card-header">
-      <p><strong>Fecha:</strong> {{ h.fecha | date:'short' }}</p>
+      <p><strong>Fecha:</strong> {{ h.fecha | date:'dd/MM/yyyy' }}</p>
       <p><strong>Especialista:</strong> {{ getNombreEspecialista(h.especialista_id) }}</p>
       <p><strong>Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
     </div>
@@ -101,10 +101,7 @@
 
 <!-- TURNOS -->
 <div class="hero-background" *ngIf="!mostrarPerfil">
-  <div class="turnos-wrapper">
-    <h2>Mis Turnos</h2>
-
-   
+  <div class="turnos-wrapper">   
     <!-- Filtros -->
 <div class="filtro-busqueda-libre">
   <label for="busquedaLibre">🔎 Buscar por cualquier dato (turno o historia clínica):</label>

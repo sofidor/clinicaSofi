@@ -11,15 +11,16 @@ import jsPDF from 'jspdf';
 import { FormatoDniPipe } from '../../pipes/formatodni-pipe';
 import { ToLowerCasePipe } from '../../pipes/tolowercase-pipe';
 import { EstadoColorPipe } from '../../pipes/estado-color-pipe';
-import { DisableIfInvalidDirective } from '../../directivas/disable-if-empty';
 import { HoverZoom } from '../../directivas/hover-zoom';
-import { AppBackdropClick } from '../../directivas/app-backdrop-click';
+import { AutoFocus } from '../../directivas/auto-focus';
+import { MostrarPassword } from '../../directivas/mostrar-password';
+
 
 
 @Component({
   selector: 'app-administrador',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormatoDniPipe,ToLowerCasePipe,EstadoColorPipe,HoverZoom,DisableIfInvalidDirective,AppBackdropClick],
+  imports: [CommonModule, ReactiveFormsModule, FormatoDniPipe,ToLowerCasePipe,EstadoColorPipe,HoverZoom,AutoFocus,MostrarPassword],
   templateUrl: './administrador.html',
   styleUrls: ['./administrador.scss']
 })
